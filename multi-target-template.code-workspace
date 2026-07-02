@@ -1,0 +1,47 @@
+{
+	"folders": [
+		{
+			"name": "multi-target-template",
+			"path": "."
+		},
+		{
+			"name": "blinky-freertos",
+			"path": "blinky-freertos"
+		},
+		{
+			"name": "oled-display",
+			"path": "oled-display"
+		},
+		{
+			"name": "event-capture-freertos",
+			"path": "event-capture-freertos"
+		},
+		{
+			"name": "cerberus-gate-controller",
+			"path": "cerberus-gate-controller"
+		},
+		{
+			"name": "hesperus-gate-sensor",
+			"path": "hesperus-gate-sensor"
+		},
+		{
+			"name": "wifi-scanner",
+			"path": "wifi-scanner"
+		},
+		{
+			"name": "ble-serial",
+			"path": "ble-serial"
+		},
+		{
+			"name": "wifi-udp-blaster",
+			"path": "wifi-udp-blaster"
+		},
+		{
+			"name": "wifi-congestion-meter",
+			"path": "wifi-congestion-meter"
+		}
+	],
+	"settings": {
+		"editor.wordWrap": "on"
+	}
+}

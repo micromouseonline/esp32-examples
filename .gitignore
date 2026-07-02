@@ -1,0 +1,16 @@
+.pio
+.vscode/
+common/secrets.h
+
+*.o
+*.d
+*.a
+*.elf
+*.bin
+*.map
+
+.DS_Store
+*.swp
+*~
+
+.env
