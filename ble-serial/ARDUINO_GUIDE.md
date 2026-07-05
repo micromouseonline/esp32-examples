@@ -30,6 +30,7 @@ Create a file named `config_flags.h` in your sketch and paste:
 ### 3. Required Libraries (Install via Library Manager)
 * h2zero/NimBLE-Arduino @ ^2.3.0
 * adafruit/Adafruit NeoPixel @ ^1.15.5
+* Networking
 
 ---
 
@@ -55,6 +56,7 @@ Create a file named `config_flags.h` in your sketch and paste:
 ### 3. Required Libraries (Install via Library Manager)
 * h2zero/NimBLE-Arduino @ ^2.3.0
 * adafruit/Adafruit NeoPixel @ ^1.15.5
+* Networking
 
 ---
 
@@ -81,6 +83,7 @@ Create a file named `config_flags.h` in your sketch and paste:
 * h2zero/NimBLE-Arduino @ ^2.3.0
 * olikraus/U8g2 @ ^2.36.2
 * adafruit/Adafruit NeoPixel @ ^1.15.5
+* Networking
 
 ---
 
@@ -103,6 +106,7 @@ Create a file named `config_flags.h` in your sketch and paste:
 
 ### 3. Required Libraries (Install via Library Manager)
 * h2zero/NimBLE-Arduino @ ^2.3.0
+* Networking
 
 ---
 
@@ -124,6 +128,7 @@ Create a file named `config_flags.h` in your sketch and paste:
 
 ### 3. Required Libraries (Install via Library Manager)
 * h2zero/NimBLE-Arduino @ ^2.3.0
+* Networking
 
 ---
 
@@ -146,6 +151,7 @@ Create a file named `config_flags.h` in your sketch and paste:
 
 ### 3. Required Libraries (Install via Library Manager)
 * h2zero/NimBLE-Arduino @ ^2.3.0
+* Networking
 
 ---
 
@@ -170,6 +176,7 @@ Create a file named `config_flags.h` in your sketch and paste:
 ### 3. Required Libraries (Install via Library Manager)
 * h2zero/NimBLE-Arduino @ ^2.3.0
 * adafruit/Adafruit NeoPixel @ ^1.15.5
+* Networking
 
 ---
 
