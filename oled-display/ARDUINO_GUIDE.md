@@ -23,7 +23,7 @@ Create a file named `config_flags.h` in your sketch and paste:
 #define BOARD_HAS_PSRAM 1
 #define BOARD_S3_ZERO 1
 #define STATUS_LED 21
-#define NEOPIXEL_COLOR_ORDER NE_RGB
+#define NEOPIXEL_COLOR_ORDER NEO_RGB
 ```
 
 ### 3. Required Libraries (Install via Library Manager)
