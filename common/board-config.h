@@ -2,7 +2,7 @@
 #define BOARD_CONFIG_H
 
 #ifndef STATUS_LED
-#error "STATUS_LED not defined. Set board defines in base_boards.ini."
+#error "STATUS_LED not defined. Set board defines in base-boards.ini."
 #endif
 
 const unsigned long SERIAL_BAUD = 460800;
