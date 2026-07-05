@@ -10,7 +10,8 @@ subdirectory and can be built with either PlatformIO (recommended) or the Arduin
 ```
 multi-target-template/
   common/               Shared headers (board config, WiFi, status LED, secrets)
-  base_boards.ini       Shared PlatformIO board definitions, extended by every project
+  base-boards.ini       Shared PlatformIO board definitions, extended by every project
+  tools/                Maintenance scripts (e.g. check_ini_composition.py)
   blinky-freertos/      Example project
   wifi-scanner/         Example project
   ...
@@ -19,7 +20,32 @@ multi-target-template/
 Each project directory contains:
 - A `.ino` sketch file (Arduino IDE entry point)
 - `application.cpp` / `application.h` (all project logic)
-- `platformio.ini` (extends `../base_boards.ini`)
+- `platformio.ini` (extends `../base-boards.ini`)
+
+---
+
+## Maintaining base-boards.ini
+
+`base-boards.ini` composes each board environment from three kinds of block via
+PlatformIO's `extends`:
+- `env_common` -- settings shared by every board (platform, framework, global build flags)
+- `proc_*` -- per-MCU settings (esp32s3, esp32c3, esp32c6, esp32)
+- `feature_*` -- optional peripherals (`feature_ble`, `feature_display`, `feature_neopixel`),
+  each bundling its library (`lib_deps`) with the build flag that enables it (e.g. `HAS_BLE`)
+
+A board section then does `extends = env_common, proc_x, feature_y, ...` and composes
+`build_flags`/`lib_deps` from those parents.
+
+**Important:** PlatformIO does not merge `build_flags`/`lib_deps` from `extends` parents
+once a section redefines that key -- every parent's value must be pulled in explicitly via
+`${parent.key}`, or it is silently dropped (no error). When adding a board or feature:
+
+1. List `extends` parents in a fixed order: `env_common`, then `proc_*`, then `feature_*`.
+2. Mirror that same order when composing `build_flags`/`lib_deps`
+   (`${env_common.build_flags}` first, then `${proc_x.build_flags}`, then each
+   `${feature_y.build_flags}`).
+3. Run `python3 tools/check_ini_composition.py` before committing -- it flags dropped
+   parent references and ambiguous multi-feature `lib_deps` merges.
 
 ---
 
@@ -54,7 +80,7 @@ All libraries are pulled automatically by PlatformIO. For Arduino IDE, install t
 ## Building with PlatformIO
 
 Open the workspace file `multi-target-template.code-workspace` in VSCode. Each project's
-`platformio.ini` already references `../base_boards.ini` and defines one environment per board.
+`platformio.ini` already references `../base-boards.ini` and defines one environment per board.
 
 From a terminal inside any project directory:
 
