@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <NimBLEDevice.h>
 
+#include "../common/board-config.h"
 #include "../common/board-id.h"
 #include "../common/esp32_info.h"
 
@@ -68,12 +69,12 @@ static void ble_sender_task(void *pvParameters) {
 #define CHARACTERISTIC_UUID_TX "6E400003-B5A3-F393-E0A9-E50E24DCCA9E"
 
 class MyServerCallbacks : public BLEServerCallbacks {
-  void onConnect(BLEServer *pServer) override {
+  void onConnect(BLEServer *pServer, NimBLEConnInfo &connInfo) override {
     deviceConnected = true;
     Serial.println("Device connected");
   };
 
-  void onDisconnect(BLEServer *pServer) override {
+  void onDisconnect(BLEServer *pServer, NimBLEConnInfo &connInfo, int reason) override {
     deviceConnected = false;
     Serial.println("Device disconnected. Restarting advertising...");
     pServer->getAdvertising()->start();  // Automatically restart advertising
@@ -81,7 +82,7 @@ class MyServerCallbacks : public BLEServerCallbacks {
 };
 
 class MyCallbacks : public BLECharacteristicCallbacks {
-  void onWrite(BLECharacteristic *pCharacteristic) override {
+  void onWrite(BLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) override {
     std::string rxValue = pCharacteristic->getValue();
 
     if (rxValue.length() > 0) {
