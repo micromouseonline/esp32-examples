@@ -12,9 +12,46 @@ Each projects can be built for a variety of supported boards. Full instructions 
 ---
 ## **PROJECTS**
 
-- **blinky-freertos**
-    Going beyond the standard blinky starter, this project shows how to create a task in freeRTOS that blinks two LEDs at different rates. 
-    It is an artificial example intended just to demonstrate how it is possible to use a single task with multiple parameters
+*(placeholder descriptions -- to be reviewed/expanded)*
 
-- **buttons-freertos**
-    l'kj'l
+- **blinky-freertos**
+    Minimal FreeRTOS example: one task, reused with different parameters, blinking two
+    LEDs at different rates.
+
+- **ble-serial**
+    BLE peripheral (Nordic UART Service) that streams a fake sensor reading to a
+    connected phone/app, alongside two independently-blinking status LEDs.
+
+- **cerberus-gate-controller**
+    Touchscreen control panel (Freenove CYD or M5Stack Core) for pairing with and
+    configuring a BLE-connected e-bike controller: speed limit, sleep timeout,
+    brightness.
+
+- **event-capture-freertos**
+    Precision event-timing pipeline: ISR-timestamped inputs, debounced and
+    time-corrected through a chain of FreeRTOS tasks, with optional WiFi time
+    anchoring.
+
+- **hesperus-gate-sensor**
+    Skeleton gate-sensor node. WiFi connection and status LED scaffolding are in
+    place; the actual sensor read/update logic is still a stub.
+
+- **oled-display**
+    Bench-test rig for cycling through fonts and OLED module variants (SSD1306,
+    SH1106, several resolutions) using two buttons.
+
+- **wifi-beacon-spammer**
+    Placeholder -- currently just a WiFi network scanner; intended to eventually
+    broadcast fake beacon frames, not implemented yet.
+
+- **wifi-congestion-meter**
+    Receives UDP traffic and prints a live bar-chart of channel utilization/throughput
+    to serial. Pairs with `wifi-udp-blaster` as the sender.
+
+- **wifi-scanner**
+    Scans for nearby WiFi networks and prints SSID/RSSI/channel/encryption over
+    serial.
+
+- **wifi-udp-blaster**
+    Sends UDP packets at maximum rate to a fixed target address, for network
+    load/stress testing.
