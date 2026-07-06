@@ -10,7 +10,7 @@
 #include "../common/secrets.h"
 #include "../common/wifi-manager.h"
 
-#include "button.h"
+#include "../common/button.h"
 #include "oled-manager.h"
 
 StatusLED statusIndicator;

@@ -46,7 +46,6 @@ Create a file named `config_flags.h` in your sketch and paste:
 #define HAS_LOVYANGFX 1
 #define HAS_DISPLAY 1
 #define ARDUINO_USB_MODE 1
-#define BOARD_HAS_PSRAM 1
 #define BOARD_M5_CORE 1
 #define STATUS_LED -1
 ```

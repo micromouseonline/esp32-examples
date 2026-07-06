@@ -23,6 +23,12 @@ constexpr bool BGR_ORDER = false;
 constexpr int PANEL_X_OFFSET = 0;
 constexpr int PANEL_Y_OFFSET = 0;
 
+// ----- Physical Buttons (A/B/C, active-LOW with onboard pull-ups) -----
+constexpr int PIN_BUTTON_A = 39;
+constexpr int PIN_BUTTON_B = 38;
+constexpr int PIN_BUTTON_C = 37;
+constexpr unsigned long BUTTON_C_LONG_PRESS_MS = 600;  // hold threshold for the double-duty button
+
 #else  // Default: Freenove FNK0104B Configuration
 
 // ----- Panel Driver & Touch Controller Selection -----
