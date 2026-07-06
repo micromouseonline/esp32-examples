@@ -124,6 +124,42 @@ but confirm with the user first if the change is broad (touches the shared
   `base-boards.ini` fixes. Only `-s3-zero` hit the flaky dblite race (fixed
   on retry); the rest succeeded first try.
 
+- **oled-display** — 10/10 envs build (was 7). Fix applied (in
+  `oled-display/platformio.ini`, not global): every env except
+  `-s3-cyd-touch-freenove` (which already gets `feature_oled` via its
+  base) now also extends `feature_oled`, merging `lib_deps`/
+  `build_flags` the same way `ble-serial` did for `feature_ble` — this
+  project's `application.cpp` includes `<U8g2lib.h>` unconditionally on
+  every board, not just the CYD/touch target.
+
+  On top of that, did a follow-up piece of work: made OLED display
+  resolution/controller a proper per-environment build axis instead of a
+  hand-edited macro in source (see plan file
+  `~/.claude/plans/before-moving-on-i-giggly-elephant.md` for full
+  context/rationale). `oled-manager.h`'s `ACTIVE_DISPLAY_INDEX` macro block
+  (previously manually commented/uncommented) is now
+  `#ifndef ACTIVE_DISPLAY_INDEX / #define ... DISPLAY_SSD1306_128X64 / #endif`,
+  overridable via a build flag. Added 4 local (non-`env:`) sections in
+  `platformio.ini` — `oled_ssd1306_128x64`, `oled_ssd1306_128x32`,
+  `oled_ssd1306_64x32`, `oled_sh1106_128x64` — each just setting
+  `-D ACTIVE_DISPLAY_INDEX=N` (values must match the `DISPLAY_*` enum in
+  oled-manager.h: 64x32=0, 128x32=1, 128x64=2, sh1106=3). Only the `s3-zero`
+  board got all 4 variants as separate envs (`oled-display-esp32-s3-zero-
+  ssd1306-128x64`, `-ssd1306-128x32`, `-ssd1306-64x32`, `-sh1106-128x64`);
+  the other 6 board envs are untouched and fall back to the header's default
+  (`SSD1306_128X64`, i.e. no behavior change for them). I2C pins stay fixed
+  at SDA=8/SCL=7 for every variant (matches current physical wiring) — the
+  displayTable's per-display pin defaults and the no-arg `initDisplay()`
+  overload remain unused/dead code, unchanged, by explicit user choice.
+
+  Verified via `tools/check_ini_composition.py` — no composition issues. All
+  10 envs (4 new s3-zero variants + 6 unchanged boards) built successfully
+  one at a time; the 6 unchanged boards produced byte-identical flash sizes
+  to their pre-change builds (no regression), and the 4 s3-zero variants
+  produced distinct flash sizes from each other confirming the build flag
+  actually changes which U8g2 class gets compiled in. No dblite flakiness
+  hit this round.
+
 ### Not yet started (systematic per-env build pass)
 
 These have NOT had the full "build every env" treatment yet. An earlier,
@@ -144,20 +180,9 @@ the whole project is clean).
   Earlier smoke test found: `application.cpp` / `display.h:23` —
   `fatal error: LovyanGFX.hpp: No such file or directory`. Not yet root-caused
   or fixed (needs the `lib_deps` for LovyanGFX added somewhere, likely a new
-  `feature_lovyangfx` block in `base-boards.ini` mirroring `feature_display`,
-  since `feature_display` currently only pulls in U8g2 not LovyanGFX — check
+  `feature_lovyangfx` block in `base-boards.ini` mirroring `feature_oled`,
+  since `feature_oled` currently only pulls in U8g2 not LovyanGFX — check
   which display library this project actually needs on which envs).
-
-- **oled-display** — envs: `oled-display-esp32-s3-zero`, `-s3-super-mini`,
-  `-s3-cyd-touch-freenove`, `-c3`, `-c3-xiao`, `-c6-xiao`, `-c6`. Earlier
-  smoke test found: `application.cpp:2` — `fatal error: U8g2lib.h: No such
-  file or directory` on `-s3-zero`, which is odd since `feature_display`
-  (U8g2) should already be wired into `base_s3_zero`... actually it's NOT:
-  only `base_s3_cyd_touch_freenove` extends `feature_display` in
-  `base-boards.ini`. This project needs U8g2 on every target, not just the
-  CYD/touch board, so `oled-display/platformio.ini` likely needs the same
-  per-env `feature_display` merge treatment that `ble-serial` got for
-  `feature_ble` (see pattern in that file).
 
 ## Suggested order
 

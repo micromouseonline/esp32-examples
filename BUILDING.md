@@ -30,7 +30,7 @@ Each project directory contains:
 PlatformIO's `extends`:
 - `env_common` -- settings shared by every board (platform, framework, global build flags)
 - `proc_*` -- per-MCU settings (esp32s3, esp32c3, esp32c6, esp32)
-- `feature_*` -- optional peripherals (`feature_ble`, `feature_display`, `feature_neopixel`),
+- `feature_*` -- optional peripherals (`feature_ble`, `feature_oled`, `feature_neopixel`),
   each bundling its library (`lib_deps`) with the build flag that enables it (e.g. `HAS_BLE`)
 
 A board section then does `extends = env_common, proc_x, feature_y, ...` and composes

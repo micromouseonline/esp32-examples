@@ -8,7 +8,7 @@
 
 ---
 
-## Target Environment: `oled-display-esp32-s3-zero`
+## Target Environment: `oled-display-esp32-s3-zero-ssd1306-128x64`
 ### 1. Arduino IDE Menu Settings
 * **Target Board:** Select the menu item corresponding to platformio board target: `esp32-s3-devkitc-1`
 * **Flash Size:** 4MB
@@ -16,6 +16,8 @@
 ### 2. Required Compiler Macros
 Create a file named `config_flags.h` in your sketch and paste:
 ```cpp
+#define ACTIVE_DISPLAY_INDEX 2
+#define HAS_DISPLAY 1
 #define HAS_NEOPIXEL 1
 #define ARDUINO_USB_DFU_ON_BOOT 0
 #define ARDUINO_USB_CDC_ON_BOOT 1
@@ -27,7 +29,90 @@ Create a file named `config_flags.h` in your sketch and paste:
 ```
 
 ### 3. Required Libraries (Install via Library Manager)
+* olikraus/U8g2 @ ^2.36.2
 * adafruit/Adafruit NeoPixel @ ^1.15.5
+* Networking
+
+---
+
+## Target Environment: `oled-display-esp32-s3-zero-ssd1306-128x32`
+### 1. Arduino IDE Menu Settings
+* **Target Board:** Select the menu item corresponding to platformio board target: `esp32-s3-devkitc-1`
+* **Flash Size:** 4MB
+
+### 2. Required Compiler Macros
+Create a file named `config_flags.h` in your sketch and paste:
+```cpp
+#define ACTIVE_DISPLAY_INDEX 1
+#define HAS_DISPLAY 1
+#define HAS_NEOPIXEL 1
+#define ARDUINO_USB_DFU_ON_BOOT 0
+#define ARDUINO_USB_CDC_ON_BOOT 1
+#define ARDUINO_USB_MODE 1
+#define BOARD_HAS_PSRAM 1
+#define BOARD_S3_ZERO 1
+#define STATUS_LED 21
+#define NEOPIXEL_COLOR_ORDER NEO_RGB
+```
+
+### 3. Required Libraries (Install via Library Manager)
+* olikraus/U8g2 @ ^2.36.2
+* adafruit/Adafruit NeoPixel @ ^1.15.5
+* Networking
+
+---
+
+## Target Environment: `oled-display-esp32-s3-zero-ssd1306-64x32`
+### 1. Arduino IDE Menu Settings
+* **Target Board:** Select the menu item corresponding to platformio board target: `esp32-s3-devkitc-1`
+* **Flash Size:** 4MB
+
+### 2. Required Compiler Macros
+Create a file named `config_flags.h` in your sketch and paste:
+```cpp
+#define ACTIVE_DISPLAY_INDEX 0
+#define HAS_DISPLAY 1
+#define HAS_NEOPIXEL 1
+#define ARDUINO_USB_DFU_ON_BOOT 0
+#define ARDUINO_USB_CDC_ON_BOOT 1
+#define ARDUINO_USB_MODE 1
+#define BOARD_HAS_PSRAM 1
+#define BOARD_S3_ZERO 1
+#define STATUS_LED 21
+#define NEOPIXEL_COLOR_ORDER NEO_RGB
+```
+
+### 3. Required Libraries (Install via Library Manager)
+* olikraus/U8g2 @ ^2.36.2
+* adafruit/Adafruit NeoPixel @ ^1.15.5
+* Networking
+
+---
+
+## Target Environment: `oled-display-esp32-s3-zero-sh1106-128x64`
+### 1. Arduino IDE Menu Settings
+* **Target Board:** Select the menu item corresponding to platformio board target: `esp32-s3-devkitc-1`
+* **Flash Size:** 4MB
+
+### 2. Required Compiler Macros
+Create a file named `config_flags.h` in your sketch and paste:
+```cpp
+#define ACTIVE_DISPLAY_INDEX 3
+#define HAS_DISPLAY 1
+#define HAS_NEOPIXEL 1
+#define ARDUINO_USB_DFU_ON_BOOT 0
+#define ARDUINO_USB_CDC_ON_BOOT 1
+#define ARDUINO_USB_MODE 1
+#define BOARD_HAS_PSRAM 1
+#define BOARD_S3_ZERO 1
+#define STATUS_LED 21
+#define NEOPIXEL_COLOR_ORDER NEO_RGB
+```
+
+### 3. Required Libraries (Install via Library Manager)
+* olikraus/U8g2 @ ^2.36.2
+* adafruit/Adafruit NeoPixel @ ^1.15.5
+* Networking
 
 ---
 
@@ -39,6 +124,7 @@ Create a file named `config_flags.h` in your sketch and paste:
 ### 2. Required Compiler Macros
 Create a file named `config_flags.h` in your sketch and paste:
 ```cpp
+#define HAS_DISPLAY 1
 #define HAS_NEOPIXEL 1
 #define ARDUINO_USB_DFU_ON_BOOT 0
 #define ARDUINO_USB_CDC_ON_BOOT 1
@@ -50,7 +136,9 @@ Create a file named `config_flags.h` in your sketch and paste:
 ```
 
 ### 3. Required Libraries (Install via Library Manager)
+* olikraus/U8g2 @ ^2.36.2
 * adafruit/Adafruit NeoPixel @ ^1.15.5
+* Networking
 
 ---
 
@@ -75,6 +163,7 @@ Create a file named `config_flags.h` in your sketch and paste:
 ### 3. Required Libraries (Install via Library Manager)
 * olikraus/U8g2 @ ^2.36.2
 * adafruit/Adafruit NeoPixel @ ^1.15.5
+* Networking
 
 ---
 
@@ -86,6 +175,7 @@ Create a file named `config_flags.h` in your sketch and paste:
 ### 2. Required Compiler Macros
 Create a file named `config_flags.h` in your sketch and paste:
 ```cpp
+#define HAS_DISPLAY 1
 #define ARDUINO_USB_CDC_ON_BOOT 1
 #define ARDUINO_USB_MODE 1
 #define BOARD_C3_SUPER_MINI 1
@@ -93,6 +183,10 @@ Create a file named `config_flags.h` in your sketch and paste:
 #define STATUS_LED 8
 #define LED_ACTIVE_LOW 1
 ```
+
+### 3. Required Libraries (Install via Library Manager)
+* olikraus/U8g2 @ ^2.36.2
+* Networking
 
 ---
 
@@ -104,12 +198,17 @@ Create a file named `config_flags.h` in your sketch and paste:
 ### 2. Required Compiler Macros
 Create a file named `config_flags.h` in your sketch and paste:
 ```cpp
+#define HAS_DISPLAY 1
 #define ARDUINO_USB_CDC_ON_BOOT 1
 #define ARDUINO_USB_MODE 1
 #define BOARD_C3_XIAO 1
 #define HAS_LED 1
 #define STATUS_LED 10
 ```
+
+### 3. Required Libraries (Install via Library Manager)
+* olikraus/U8g2 @ ^2.36.2
+* Networking
 
 ---
 
@@ -121,6 +220,7 @@ Create a file named `config_flags.h` in your sketch and paste:
 ### 2. Required Compiler Macros
 Create a file named `config_flags.h` in your sketch and paste:
 ```cpp
+#define HAS_DISPLAY 1
 #define ARDUINO_USB_CDC_ON_BOOT 1
 #define ARDUINO_USB_MODE 1
 #define BOARD_C6_XIAO 1
@@ -128,6 +228,10 @@ Create a file named `config_flags.h` in your sketch and paste:
 #define STATUS_LED 15
 #define LED_ACTIVE_LOW 1
 ```
+
+### 3. Required Libraries (Install via Library Manager)
+* olikraus/U8g2 @ ^2.36.2
+* Networking
 
 ---
 
@@ -139,6 +243,7 @@ Create a file named `config_flags.h` in your sketch and paste:
 ### 2. Required Compiler Macros
 Create a file named `config_flags.h` in your sketch and paste:
 ```cpp
+#define HAS_DISPLAY 1
 #define HAS_NEOPIXEL 1
 #define ARDUINO_USB_CDC_ON_BOOT 1
 #define ARDUINO_USB_MODE 1
@@ -149,7 +254,9 @@ Create a file named `config_flags.h` in your sketch and paste:
 ```
 
 ### 3. Required Libraries (Install via Library Manager)
+* olikraus/U8g2 @ ^2.36.2
 * adafruit/Adafruit NeoPixel @ ^1.15.5
+* Networking
 
 ---
 

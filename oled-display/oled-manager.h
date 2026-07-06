@@ -10,11 +10,11 @@
 #define DISPLAY_SSD1306_128X64 2
 #define DISPLAY_SH1106_128X64 3
 
-// Choose your target active display index right here
-// #define ACTIVE_DISPLAY_INDEX DISPLAY_SSD1306_64X32
+// Active display index is normally supplied by a per-environment build flag
+// (see the [oled_*] sections in platformio.ini); this is just the fallback.
+#ifndef ACTIVE_DISPLAY_INDEX
 #define ACTIVE_DISPLAY_INDEX DISPLAY_SSD1306_128X64
-// #define ACTIVE_DISPLAY_INDEX DISPLAY_SH1106_128X64
-// #define ACTIVE_DISPLAY_INDEX DISPLAY_SSD1306_128X32
+#endif
 
 // 1. Simple, clean names as an enum mapped to macro values
 enum DisplayType {
