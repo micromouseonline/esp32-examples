@@ -21,7 +21,9 @@ but confirm with the user first if the change is broad (touches the shared
   SCons dblite race (`FileNotFoundError: .sconsign310.tmp`) but far less
   often than parallel jobs, and never the stale-object-file failure mode.
   If you see the dblite race, just retry the same command once — it's not a
-  real error.
+  real error. Also seen once: `<project>.ino.cpp: No such file or directory`
+  (the `.ino`→`.cpp` conversion step racing the compile step) — same deal,
+  just retry.
 - After confirming a real (non-flaky) failure, `rm -rf .pio/build/<env>`
   before retrying to rule out stale build cache.
 - Run builds from inside the project directory (`cd <project> && pio run
@@ -160,38 +162,66 @@ but confirm with the user first if the change is broad (touches the shared
   actually changes which U8g2 class gets compiled in. No dblite flakiness
   hit this round.
 
-### Not yet started (systematic per-env build pass)
+- **cerberus-gate-controller** — 2/2 envs build (down from 8). This project
+  is a touchscreen/display UI app (bike/gate control panel); 6 of its 8 envs
+  had no physical screen and no LovyanGFX dep, and were dropped per user
+  decision (`cerberus-esp32-s3-zero`, `-s3-super-mini`, `-c3`, `-c3-xiao`,
+  `-c6-xiao`, `-c6`). Kept: `cerberus-esp32-s3-cyd-touch-freenove` (Freenove
+  FNK0104B, ILI9341+FT6336U touch, manual LovyanGFX config) and
+  `cerberus-m5-core` (M5Stack Core -- **not** Core2; see rename below --
+  ILI9341 via LovyanGFX `LGFX_AUTODETECT`, 3 hardware buttons, no touch).
 
-These have NOT had the full "build every env" treatment yet. An earlier,
-less rigorous pass (before this systematic project-by-project process
-started) found some of these errors, listed below — they still need
-verifying/fixing properly, env by env, and may have more once you dig in
-(e.g. wifi-scanner also *looked* fine on a single-env smoke test before the
-Networking root cause was found — don't assume a single successful env means
-the whole project is clean).
+  Full design/rationale in `~/.claude/plans/before-moving-on-i-giggly-elephant.md`.
+  Fixes applied:
+  - `base-boards.ini`: added `[feature_lovyangfx]` (lib_deps =
+    `lovyan03/LovyanGFX @ ^1.1.16`, matching the `feature_ble`/`feature_oled`
+    pattern — project-scoped since only cerberus needs it, not merged into
+    `base_s3_cyd_touch_freenove`/`base_m5_core` themselves since other
+    projects share those bases without needing LovyanGFX).
+  - **Board identity correction**: renamed `base_m5_core2`→`base_m5_core`
+    and `-D BOARD_M5_CORE2`→`-D BOARD_M5_CORE` throughout (`base-boards.ini`,
+    `cerberus-gate-controller/config.h`, `display.h`). The code called this
+    board "Core2" but the user confirmed the physical unit has no
+    touchscreen and 3 hardware buttons instead — that's the original
+    M5Stack Core/Basic/Gray/Fire, not Core2 (which has capacitive touch).
+    Confirmed via grep this board is cerberus-exclusive (no other project
+    references it), so the rename was safe and total.
+  - `cerberus-gate-controller/platformio.ini`: dropped the 6 non-display
+    envs; both surviving envs now extend `feature_lovyangfx` and merge
+    `lib_deps`/`build_flags` the same way `ble-serial` merged `feature_ble`.
+    Also deleted a block of dead TFT_eSPI-style build flags
+    (`USER_SETUP_LOADED=1`, `ILI9341_DRIVER=1`, `TFT_WIDTH=240`, etc.) that
+    LovyanGFX never reads — the real panel config comes entirely from
+    `config.h`'s constexpr pin values.
+  - `cerberus-gate-controller/display.h`: replaced the implicit
+    `#ifdef BOARD_M5_CORE2 ... #else` (silently defaulting anything
+    non-Core2 to the Freenove config — how the 6 dropped envs got a wrong
+    display config instead of failing loudly) with an explicit
+    `#if defined(BOARD_M5_CORE) ... #elif defined(BOARD_S3_CYD_TOUCH_FREENOVE)
+    ... #else #error ... #endif` chain.
+  - Verified via `tools/check_ini_composition.py` (clean) and building both
+    envs (each needed one retry for this session's known flaky SCons races,
+    not real errors) — `LovyanGFX.hpp` resolves and the full app
+    (`font-demo.h`, `gui-button.h`, `touch-calibration.h`, previously never
+    compiled since the build always failed before reaching them) compiles
+    clean on both boards.
 
-- **blinky-freertos** — envs: `blinky-freertos-esp32-s3-zero`,
-  `-s3-super-mini`, `-s3-cyd-touch-freenove`, `-c3`, `-c3-xiao`, `-c6-xiao`,
-  `-c6`. Not yet build-tested since the `Networking` fix landed.
+  **Explicitly deferred** (touchscreen/input phase, not done yet): the
+  touch controller (`Touch_FT5x06`) is a private member instantiated inside
+  the Freenove `LGFX` class itself, not an independent swappable axis — that
+  needs its own design pass once the user is ready (XPT2046/GT911
+  alternates are already documented as commented-out profiles in
+  `config.h`). Also deferred: wiring up the M5's 3 physical buttons, and the
+  user's broader idea of a unified ~4-button input model. `application.cpp`
+  currently calls `lcd.getTouch()` unconditionally on both boards — harmless
+  on M5 (no touch hardware, so it just never reports a touch) until that
+  phase happens.
 
-- **cerberus-gate-controller** — envs: `cerberus-esp32-s3-zero`,
-  `-s3-super-mini`, `-s3-cyd-touch-freenove`, `-c3`, `-c3-xiao`, `-c6-xiao`,
-  `-c6`, `-m5-core` (8 envs — has an extra M5 Core2 target the others don't).
-  Earlier smoke test found: `application.cpp` / `display.h:23` —
-  `fatal error: LovyanGFX.hpp: No such file or directory`. Not yet root-caused
-  or fixed (needs the `lib_deps` for LovyanGFX added somewhere, likely a new
-  `feature_lovyangfx` block in `base-boards.ini` mirroring `feature_oled`,
-  since `feature_oled` currently only pulls in U8g2 not LovyanGFX — check
-  which display library this project actually needs on which envs).
+## All projects done
 
-## Suggested order
-
-Alphabetical/arbitrary is fine, but doing the WiFi-only projects
-(`wifi-beacon-spammer`, `wifi-congestion-meter`, `wifi-udp-blaster`,
-`blinky-freertos`, `event-capture-freertos`, `hesperus-gate-sensor`) before
-the two display-dependent ones (`oled-display`, `cerberus-gate-controller`)
-is probably fastest, since the display ones need a genuinely new
-`feature_lovyangfx`-style fix worked out first.
+Every project in this repo now builds clean on every env it's expected to
+support. This file can be treated as a historical record of what was found
+and fixed; there's no more "not yet started" work queued.
 
 ## Housekeeping done earlier in this session (unrelated to build fixes, FYI)
 

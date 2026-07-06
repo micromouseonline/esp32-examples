@@ -9,11 +9,11 @@
 //  1. HARDWARE CONFIGURATION (DISPLAY & TOUCH)
 // ============================================================================
 
-#ifdef BOARD_M5_CORE2
+#ifdef BOARD_M5_CORE
 
-// ----- M5Stack Core2 Native Specifications -----
-#define DISPLAY_PANEL_M5STACK_CORE2
-constexpr int PANEL_NATIVE_WIDTH = 320;  // Core2 native is landscape (320x240)
+// ----- M5Stack Core Native Specifications -----
+#define DISPLAY_PANEL_M5STACK_CORE
+constexpr int PANEL_NATIVE_WIDTH = 320;  // Core native is landscape (320x240)
 constexpr int PANEL_NATIVE_HEIGHT = 240;
 constexpr int DISPLAY_WIDTH = 320;
 constexpr int DISPLAY_HEIGHT = 240;

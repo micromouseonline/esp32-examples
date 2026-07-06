@@ -13,12 +13,14 @@
 #define LGFX_USE_V1
 #include "config.h"
 
-#ifdef BOARD_M5_CORE2
-// Use LovyanGFX's runtime auto-detection to configure the M5Stack Core2 panel/touch/backlight.
+#if defined(BOARD_M5_CORE)
+// Use LovyanGFX's runtime auto-detection to configure the M5Stack Core panel/backlight.
+// This board has no touchscreen (3 hardware buttons instead); autodetect simply
+// won't find a touch chip, which is correct.
 #define LGFX_AUTODETECT
 #include <LovyanGFX.hpp>
 
-#else  // Default: Freenove FNK0104B Board Manual Configuration[cite: 1]
+#elif defined(BOARD_S3_CYD_TOUCH_FREENOVE)  // Freenove FNK0104B Board Manual Configuration
 
 #include <LovyanGFX.hpp>
 class LGFX : public lgfx::LGFX_Device {
@@ -96,4 +98,7 @@ public:
         setPanel(&_panel);
     }
 };
+
+#else
+#error "display.h: no known display configuration for this board"
 #endif

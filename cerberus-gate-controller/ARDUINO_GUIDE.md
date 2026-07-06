@@ -8,52 +8,6 @@
 
 ---
 
-## Target Environment: `cerberus-esp32-s3-zero`
-### 1. Arduino IDE Menu Settings
-* **Target Board:** Select the menu item corresponding to platformio board target: `esp32-s3-devkitc-1`
-* **Flash Size:** 4MB
-
-### 2. Required Compiler Macros
-Create a file named `config_flags.h` in your sketch and paste:
-```cpp
-#define HAS_NEOPIXEL 1
-#define ARDUINO_USB_DFU_ON_BOOT 0
-#define ARDUINO_USB_CDC_ON_BOOT 1
-#define ARDUINO_USB_MODE 1
-#define BOARD_HAS_PSRAM 1
-#define BOARD_S3_ZERO 1
-#define STATUS_LED 21
-#define NEOPIXEL_COLOR_ORDER NE_RGB
-```
-
-### 3. Required Libraries (Install via Library Manager)
-* adafruit/Adafruit NeoPixel @ ^1.15.5
-
----
-
-## Target Environment: `cerberus-esp32-s3-super-mini`
-### 1. Arduino IDE Menu Settings
-* **Target Board:** Select the menu item corresponding to platformio board target: `esp32-s3-devkitc-1`
-* **Flash Size:** 4MB
-
-### 2. Required Compiler Macros
-Create a file named `config_flags.h` in your sketch and paste:
-```cpp
-#define HAS_NEOPIXEL 1
-#define ARDUINO_USB_DFU_ON_BOOT 0
-#define ARDUINO_USB_CDC_ON_BOOT 1
-#define ARDUINO_USB_MODE 1
-#define BOARD_HAS_PSRAM 1
-#define BOARD_S3_SUPER_MINI 1
-#define STATUS_LED 48
-#define NEOPIXEL_COLOR_ORDER NEO_GRB
-```
-
-### 3. Required Libraries (Install via Library Manager)
-* adafruit/Adafruit NeoPixel @ ^1.15.5
-
----
-
 ## Target Environment: `cerberus-esp32-s3-cyd-touch-freenove`
 ### 1. Arduino IDE Menu Settings
 * **Target Board:** Select the menu item corresponding to platformio board target: `esp32-s3-devkitc-1`
@@ -62,6 +16,7 @@ Create a file named `config_flags.h` in your sketch and paste:
 ### 2. Required Compiler Macros
 Create a file named `config_flags.h` in your sketch and paste:
 ```cpp
+#define HAS_LOVYANGFX 1
 #define HAS_DISPLAY 1
 #define HAS_NEOPIXEL 1
 #define ARDUINO_USB_DFU_ON_BOOT 0
@@ -70,106 +25,13 @@ Create a file named `config_flags.h` in your sketch and paste:
 #define BOARD_HAS_PSRAM 1
 #define BOARD_S3_CYD_TOUCH_FREENOVE 1
 #define STATUS_LED 42
-#define FNK0104AB_2P8_240x320_ILI9341 1
-#define ARDUINO_ARCH_ESP32 1
-#define USER_SETUP_LOADED 1
-#define ILI9341_DRIVER 1
-#define TFT_WIDTH 240
-#define TFT_HEIGHT 320
-#define TFT_MISO 13
-#define TFT_MOSI 11
-#define TFT_SCLK 12
-#define TFT_CS 10
-#define TFT_DC 14
-#define TFT_RST 1
-#define TFT_BL 21
-#define TFT_BACKLIGHT_ON HIGH
-#define LOAD_GLCD 1
-#define LOAD_FONT2 1
-#define LOAD_FONT4 1
-#define LOAD_FONT7 1
-#define TFT_INVERSION_ON 1
 ```
 
 ### 3. Required Libraries (Install via Library Manager)
+* lovyan03/LovyanGFX @ ^1.1.16
 * olikraus/U8g2 @ ^2.36.2
 * adafruit/Adafruit NeoPixel @ ^1.15.5
-* lovyan03/LovyanGFX @ ^1.1.16
-
----
-
-## Target Environment: `cerberus-esp32-c3`
-### 1. Arduino IDE Menu Settings
-* **Target Board:** Select the menu item corresponding to platformio board target: `esp32-c3-devkitm-1`
-* **Flash Size:** Default
-
-### 2. Required Compiler Macros
-Create a file named `config_flags.h` in your sketch and paste:
-```cpp
-#define ARDUINO_USB_CDC_ON_BOOT 1
-#define ARDUINO_USB_MODE 1
-#define BOARD_C3_SUPER_MINI 1
-#define HAS_LED 1
-#define STATUS_LED 8
-#define LED_ACTIVE_LOW 1
-```
-
----
-
-## Target Environment: `cerberus-esp32-c3-xiao`
-### 1. Arduino IDE Menu Settings
-* **Target Board:** Select the menu item corresponding to platformio board target: `seeed_xiao_esp32c3`
-* **Flash Size:** Default
-
-### 2. Required Compiler Macros
-Create a file named `config_flags.h` in your sketch and paste:
-```cpp
-#define ARDUINO_USB_CDC_ON_BOOT 1
-#define ARDUINO_USB_MODE 1
-#define BOARD_C3_XIAO 1
-#define HAS_LED 1
-#define STATUS_LED 10
-```
-
----
-
-## Target Environment: `cerberus-esp32-c6-xiao`
-### 1. Arduino IDE Menu Settings
-* **Target Board:** Select the menu item corresponding to platformio board target: `esp32-c6-devkitc-1`
-* **Flash Size:** 8MB
-
-### 2. Required Compiler Macros
-Create a file named `config_flags.h` in your sketch and paste:
-```cpp
-#define ARDUINO_USB_CDC_ON_BOOT 1
-#define ARDUINO_USB_MODE 1
-#define BOARD_C6_XIAO 1
-#define HAS_LED 1
-#define STATUS_LED 15
-#define LED_ACTIVE_LOW 1
-```
-
----
-
-## Target Environment: `cerberus-esp32-c6`
-### 1. Arduino IDE Menu Settings
-* **Target Board:** Select the menu item corresponding to platformio board target: `esp32-c6-devkitc-1`
-* **Flash Size:** 4MB
-
-### 2. Required Compiler Macros
-Create a file named `config_flags.h` in your sketch and paste:
-```cpp
-#define HAS_NEOPIXEL 1
-#define ARDUINO_USB_CDC_ON_BOOT 1
-#define ARDUINO_USB_MODE 1
-#define ARDUINO_USB_MSC_ON_BOOT 0
-#define BOARD_C6_SUPER_MINI 1
-#define STATUS_LED 15
-#define NEOPIXEL_COLOR_ORDER NEO_RGB
-```
-
-### 3. Required Libraries (Install via Library Manager)
-* adafruit/Adafruit NeoPixel @ ^1.15.5
+* Networking
 
 ---
 
@@ -181,16 +43,18 @@ Create a file named `config_flags.h` in your sketch and paste:
 ### 2. Required Compiler Macros
 Create a file named `config_flags.h` in your sketch and paste:
 ```cpp
+#define HAS_LOVYANGFX 1
 #define HAS_DISPLAY 1
 #define ARDUINO_USB_MODE 1
 #define BOARD_HAS_PSRAM 1
-#define BOARD_M5_CORE2 1
+#define BOARD_M5_CORE 1
 #define STATUS_LED -1
 ```
 
 ### 3. Required Libraries (Install via Library Manager)
-* olikraus/U8g2 @ ^2.36.2
 * lovyan03/LovyanGFX @ ^1.1.16
+* olikraus/U8g2 @ ^2.36.2
+* Networking
 
 ---
 

@@ -30,8 +30,9 @@ Each project directory contains:
 PlatformIO's `extends`:
 - `env_common` -- settings shared by every board (platform, framework, global build flags)
 - `proc_*` -- per-MCU settings (esp32s3, esp32c3, esp32c6, esp32)
-- `feature_*` -- optional peripherals (`feature_ble`, `feature_oled`, `feature_neopixel`),
-  each bundling its library (`lib_deps`) with the build flag that enables it (e.g. `HAS_BLE`)
+- `feature_*` -- optional peripherals (`feature_ble`, `feature_oled`, `feature_neopixel`,
+  `feature_lovyangfx`), each bundling its library (`lib_deps`) with the build flag that
+  enables it (e.g. `HAS_BLE`)
 
 A board section then does `extends = env_common, proc_x, feature_y, ...` and composes
 `build_flags`/`lib_deps` from those parents.
@@ -46,6 +47,43 @@ once a section redefines that key -- every parent's value must be pulled in expl
    `${feature_y.build_flags}`).
 3. Run `python3 tools/check_ini_composition.py` before committing -- it flags dropped
    parent references and ambiguous multi-feature `lib_deps` merges.
+
+### `env_common.lib_deps` must list `Networking` explicitly
+
+Don't replace `lib_deps = Networking` with just the `-I".../Network/src"` include-path
+build flag, even though the header alone looks like it should be enough. PlatformIO's
+Library Dependency Finder only compiles a library's `.cpp` sources when it's a real
+`lib_deps` entry -- a raw `-I` flag makes the headers visible to the compiler but silently
+drops the implementation, causing link errors (`undefined reference to
+NetworkInterface::...`) in any project that exercises WiFi beyond trivial use (e.g.
+`WiFi.scanNetworks()`). This has regressed once already; keep both the `lib_deps` entry and
+the `-I` flag together.
+
+### Project-specific features: merge at the project level, not the board level
+
+Some features (`feature_ble`, `feature_lovyangfx`) are only needed by one project, not by
+every project that happens to use a given board. Don't add them to the shared `base_*`
+section in `base-boards.ini` -- that would force every other project using that board to
+pull in the extra library too. Instead, merge the feature into just that project's own
+`platformio.ini` envs:
+
+```ini
+[env:myproject-esp32-s3-zero]
+extends = base_s3_zero, feature_ble
+lib_deps =
+    ${base_s3_zero.lib_deps}
+    ${feature_ble.lib_deps}
+build_flags =
+    ${base_s3_zero.build_flags}
+    ${feature_ble.build_flags}
+```
+
+**Don't** try to shortcut this with a global `[env]` section to auto-inject a feature into
+every env in a project's `platformio.ini`. It doesn't work: PlatformIO only falls back to
+`[env]` defaults for an option when the specific `[env:NAME]` has no value for it at all,
+including via `extends`. Since board envs already inherit `build_flags`/`lib_deps` from
+their base, `[env]` defaults are silently ignored -- no error, the feature just never gets
+compiled in.
 
 ---
 
@@ -223,6 +261,23 @@ Install the board package **esp32 by Espressif Systems** via **Boards Manager** 
 | Flash Size      | 4MB (32Mb)         |
 | Flash Mode      | QIO                |
 | USB MSC On Boot | Disabled           |
+
+---
+
+## Troubleshooting: flaky local builds (SCons state race)
+
+On some machines, PlatformIO's SCons backend occasionally corrupts its own build-state
+tracking, especially right after a fresh `.pio/build/<env>` directory is created:
+
+- Building several environments in one `pio run -e a -e b -e c` call can trigger this and,
+  worse, can silently link stale/partial object files (showing up as a bogus
+  `undefined reference to setup()/loop()`). Build **one environment per `pio run`
+  invocation**.
+- A `FileNotFoundError: .sconsign310.tmp` or `<project>.ino.cpp: No such file or directory`
+  on an otherwise-correct build is this same race, not a real error -- just retry the exact
+  same command once.
+- If a build fails for a different reason, `rm -rf .pio/build/<env>` before retrying to rule
+  out stale build cache.
 
 ---
 
