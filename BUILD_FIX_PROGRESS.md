@@ -87,6 +87,13 @@ but confirm with the user first if the change is broad (touches the shared
   `-c6`). Fixed entirely by the central `Networking` lib_deps fix above — no
   per-project changes needed in `wifi-scanner/platformio.ini` itself.
 
+- **blinky-freertos** — 7/7 envs build (`blinky-freertos-esp32-s3-zero`,
+  `-s3-super-mini`, `-s3-cyd-touch-freenove`, `-c3`, `-c3-xiao`, `-c6-xiao`,
+  `-c6`). No code/config changes needed at all — already fully fixed by the
+  two global `base-boards.ini` fixes (`NE_RGB` typo, `Networking` lib_deps).
+  Every env hit the flaky SCons dblite race on the first attempt and
+  succeeded on retry; no real errors found.
+
 ### Not yet started (systematic per-env build pass)
 
 These have NOT had the full "build every env" treatment yet. An earlier,
