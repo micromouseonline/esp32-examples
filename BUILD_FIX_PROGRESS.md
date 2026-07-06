@@ -94,6 +94,36 @@ but confirm with the user first if the change is broad (touches the shared
   Every env hit the flaky SCons dblite race on the first attempt and
   succeeded on retry; no real errors found.
 
+- **wifi-beacon-spammer** — 7/7 envs build (`wifi-beacon-spammer-esp32-s3-zero`,
+  `-s3-super-mini`, `-s3-cyd-touch-freenove`, `-c3`, `-c3-xiao`, `-c6-xiao`,
+  `-c6`). No code/config changes needed — fully fixed by the two global
+  `base-boards.ini` fixes. All 7 succeeded on the first attempt, no flakiness
+  hit at all this time.
+
+- **wifi-congestion-meter** — 7/7 envs build (`wifi-congestion-meter-esp32-s3-zero`,
+  `-s3-super-mini`, `-s3-cyd-touch-freenove`, `-c3`, `-c3-xiao`, `-c6-xiao`,
+  `-c6`). No code/config changes needed — fully fixed by the two global
+  `base-boards.ini` fixes. Only `-s3-zero` hit the flaky dblite race (fixed
+  on retry); the rest succeeded first try.
+
+- **wifi-udp-blaster** — 7/7 envs build (`wifi-udp-blaster-esp32-s3-zero`,
+  `-s3-super-mini`, `-s3-cyd-touch-freenove`, `-c3`, `-c3-xiao`, `-c6-xiao`,
+  `-c6`). No code/config changes needed — fully fixed by the two global
+  `base-boards.ini` fixes. Only `-s3-zero` hit the flaky dblite race (fixed
+  on retry); the rest succeeded first try.
+
+- **event-capture-freertos** — 7/7 envs build (`event-capture-freertos-esp32-s3-zero`,
+  `-s3-super-mini`, `-s3-cyd-touch-freenove`, `-c3`, `-c3-xiao`, `-c6-xiao`,
+  `-c6`). No code/config changes needed — fully fixed by the two global
+  `base-boards.ini` fixes. Only `-s3-zero` hit the flaky dblite race (fixed
+  on retry); the rest succeeded first try.
+
+- **hesperus-gate-sensor** — 7/7 envs build (`hesperus-esp32-s3-zero`,
+  `-s3-super-mini`, `-s3-cyd-touch-freenove`, `-c3`, `-c3-xiao`, `-c6-xiao`,
+  `-c6`). No code/config changes needed — fully fixed by the two global
+  `base-boards.ini` fixes. Only `-s3-zero` hit the flaky dblite race (fixed
+  on retry); the rest succeeded first try.
+
 ### Not yet started (systematic per-env build pass)
 
 These have NOT had the full "build every env" treatment yet. An earlier,
@@ -118,15 +148,6 @@ the whole project is clean).
   since `feature_display` currently only pulls in U8g2 not LovyanGFX — check
   which display library this project actually needs on which envs).
 
-- **event-capture-freertos** — envs: `event-capture-freertos-esp32-s3-zero`,
-  `-s3-super-mini`, `-s3-cyd-touch-freenove`, `-c3`, `-c3-xiao`, `-c6-xiao`,
-  `-c6`. Only smoke-tested on `-s3-zero` before the NE_RGB/Networking fixes;
-  needs full re-verification.
-
-- **hesperus-gate-sensor** — envs: `hesperus-esp32-s3-zero`,
-  `-s3-super-mini`, `-s3-cyd-touch-freenove`, `-c3`, `-c3-xiao`, `-c6-xiao`,
-  `-c6`. Same as above — only smoke-tested on `-s3-zero`, needs full pass.
-
 - **oled-display** — envs: `oled-display-esp32-s3-zero`, `-s3-super-mini`,
   `-s3-cyd-touch-freenove`, `-c3`, `-c3-xiao`, `-c6-xiao`, `-c6`. Earlier
   smoke test found: `application.cpp:2` — `fatal error: U8g2lib.h: No such
@@ -137,19 +158,6 @@ the whole project is clean).
   CYD/touch board, so `oled-display/platformio.ini` likely needs the same
   per-env `feature_display` merge treatment that `ble-serial` got for
   `feature_ble` (see pattern in that file).
-
-- **wifi-beacon-spammer** — envs: `wifi-beacon-spammer-esp32-s3-zero`,
-  `-s3-super-mini`, `-s3-cyd-touch-freenove`, `-c3`, `-c3-xiao`, `-c6-xiao`,
-  `-c6`. Only smoke-tested on `-s3-zero`; needs full pass (should now
-  benefit from the Networking fix automatically, but verify).
-
-- **wifi-congestion-meter** — envs: `wifi-congestion-meter-esp32-s3-zero`,
-  `-s3-super-mini`, `-s3-cyd-touch-freenove`, `-c3`, `-c3-xiao`, `-c6-xiao`,
-  `-c6`. Only smoke-tested on `-s3-zero`; needs full pass.
-
-- **wifi-udp-blaster** — envs: `wifi-udp-blaster-esp32-s3-zero`,
-  `-s3-super-mini`, `-s3-cyd-touch-freenove`, `-c3`, `-c3-xiao`, `-c6-xiao`,
-  `-c6`. Only smoke-tested on `-s3-zero`; needs full pass.
 
 ## Suggested order
 

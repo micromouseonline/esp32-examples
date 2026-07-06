@@ -23,11 +23,12 @@ Create a file named `config_flags.h` in your sketch and paste:
 #define BOARD_HAS_PSRAM 1
 #define BOARD_S3_ZERO 1
 #define STATUS_LED 21
-#define NEOPIXEL_COLOR_ORDER NE_RGB
+#define NEOPIXEL_COLOR_ORDER NEO_RGB
 ```
 
 ### 3. Required Libraries (Install via Library Manager)
 * adafruit/Adafruit NeoPixel @ ^1.15.5
+* Networking
 
 ---
 
@@ -51,6 +52,7 @@ Create a file named `config_flags.h` in your sketch and paste:
 
 ### 3. Required Libraries (Install via Library Manager)
 * adafruit/Adafruit NeoPixel @ ^1.15.5
+* Networking
 
 ---
 
@@ -75,6 +77,7 @@ Create a file named `config_flags.h` in your sketch and paste:
 ### 3. Required Libraries (Install via Library Manager)
 * olikraus/U8g2 @ ^2.36.2
 * adafruit/Adafruit NeoPixel @ ^1.15.5
+* Networking
 
 ---
 
@@ -94,6 +97,9 @@ Create a file named `config_flags.h` in your sketch and paste:
 #define LED_ACTIVE_LOW 1
 ```
 
+### 3. Required Libraries (Install via Library Manager)
+* Networking
+
 ---
 
 ## Target Environment: `event-capture-freertos-esp32-c3-xiao`
@@ -110,6 +116,9 @@ Create a file named `config_flags.h` in your sketch and paste:
 #define HAS_LED 1
 #define STATUS_LED 10
 ```
+
+### 3. Required Libraries (Install via Library Manager)
+* Networking
 
 ---
 
@@ -128,6 +137,9 @@ Create a file named `config_flags.h` in your sketch and paste:
 #define STATUS_LED 15
 #define LED_ACTIVE_LOW 1
 ```
+
+### 3. Required Libraries (Install via Library Manager)
+* Networking
 
 ---
 
@@ -150,6 +162,7 @@ Create a file named `config_flags.h` in your sketch and paste:
 
 ### 3. Required Libraries (Install via Library Manager)
 * adafruit/Adafruit NeoPixel @ ^1.15.5
+* Networking
 
 ---
 
