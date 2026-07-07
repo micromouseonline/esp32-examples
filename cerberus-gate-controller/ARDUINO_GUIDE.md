@@ -25,6 +25,7 @@ Create a file named `config_flags.h` in your sketch and paste:
 #define BOARD_HAS_PSRAM 1
 #define BOARD_S3_CYD_TOUCH_FREENOVE 1
 #define STATUS_LED 42
+#define LCD_ROTATION 1
 ```
 
 ### 3. Required Libraries (Install via Library Manager)
@@ -48,6 +49,7 @@ Create a file named `config_flags.h` in your sketch and paste:
 #define ARDUINO_USB_MODE 1
 #define BOARD_M5_CORE 1
 #define STATUS_LED -1
+#define LCD_ROTATION 1
 ```
 
 ### 3. Required Libraries (Install via Library Manager)
