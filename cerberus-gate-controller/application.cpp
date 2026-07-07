@@ -2,6 +2,7 @@
 #include <Preferences.h>
 #include <WiFi.h>
 #include <esp_wifi.h>
+#include <freertos/task.h>
 
 #include "application.h"
 
@@ -23,6 +24,18 @@
 StatusLED statusIndicator;
 static LGFX lcd;
 static LGFX_Sprite sprite(&lcd);  // Create an instance of LGFX_Sprite if you plan to use sprites.
+
+// Local Input Polling Task (Core 1, per DESIGN-REQUIREMENT.md). Owns all
+// input-device reads (GPIO + touch); the main task (app_setup/app_loop) owns
+// the display and must never poll a device from here to avoid double-reads.
+static void input_poll_task(void *) {
+  const TickType_t period = pdMS_TO_TICKS(INPUT_POLL_PERIOD_MS);
+  for (;;) {
+    poll_gpio_buttons();
+    poll_touch_buttons(lcd);
+    vTaskDelay(period);
+  }
+}
 
 void app_setup() {
   // get the serial connection kicked off.
@@ -69,12 +82,11 @@ void app_setup() {
   // spin forever here and app_loop() (GPIO button polling) would never run.
   // show_fonts_structured(lcd);
 #endif
+  xTaskCreatePinnedToCore(input_poll_task, "input_poll", 4096, nullptr, 1, nullptr, 1);
 }
 
 void app_loop() {
   yield();
-  poll_touch_buttons(lcd);
-  poll_gpio_buttons();
   input_queue_drain();
   delay(50);
 }

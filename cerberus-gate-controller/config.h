@@ -52,6 +52,9 @@ constexpr int BLE_RECONNECT_BACKOFF_MAX_MS = 12000;
 #define NVS_KEY_BIKE_ADDR "bike_addr"
 
 // ----- App Behavior Tunables -----
+// Local Input Polling Task period (Core 1) -- DESIGN-REQUIREMENT.md specifies
+// GPIO/NeoKey/touch are all polled sequentially every 15ms from one task.
+constexpr int INPUT_POLL_PERIOD_MS = 15;
 constexpr int TOP_SPEED_MIN = 1;
 constexpr int TOP_SPEED_MAX = 20;
 constexpr int TOP_SPEED_DEFAULT = 15;
