@@ -67,7 +67,7 @@ void app_setup() {
   // Touch-only demo utility (its internal loop only exits via getTouch()).
   // M5 Core has no touch hardware, so calling this unconditionally would
   // spin forever here and app_loop() (GPIO button polling) would never run.
-  show_fonts_structured(lcd);
+  // show_fonts_structured(lcd);
 #endif
 }
 
