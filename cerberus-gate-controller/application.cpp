@@ -14,6 +14,7 @@
 
 #include "display.h"
 
+#include "app-modes.h"
 #include "display-basics.h"
 #include "font-demo.h"
 #include "gpio-buttons.h"

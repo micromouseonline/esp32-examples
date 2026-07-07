@@ -7,20 +7,28 @@
 // Define a type for our button action callback function
 typedef void (*ButtonCallback)();
 
+// 1. Create an enum so we can track the total button count easily
+enum ButtonID { BTN_ARM, BTN_START, BTN_GOAL, BTN_RESET, NUM_BUTTONS };
+
+// Defined in app-modes.h -- forward-declared here since ButtonConfig's
+// onPress callbacks (below) need to call it, but app-modes.h needs ButtonID
+// (just above), so app-modes.h depends on this file, not the reverse.
+void on_button_event(ButtonID id);
+
 inline void onArmPressed() {
-  Serial.println("TX: CMD_ARM");
+  on_button_event(BTN_ARM);
 }
 
 inline void onStartPressed() {
-  Serial.println("TX: CMD_START");
+  on_button_event(BTN_START);
 }
 
 inline void onGoalPressed() {
-  Serial.println("TX: CMD_GOAL");
+  on_button_event(BTN_GOAL);
 }
 
 inline void onResetPressed() {
-  Serial.println("TX: CMD_RESET");
+  on_button_event(BTN_RESET);
 }
 
 struct ButtonConfig {
@@ -36,9 +44,6 @@ struct ButtonConfig {
   const char* label;
   ButtonCallback onPress;  // The function to execute when clicked
 };
-
-// 1. Create an enum so we can track the total button count easily
-enum ButtonID { BTN_ARM, BTN_START, BTN_GOAL, BTN_RESET, NUM_BUTTONS };
 
 // Canonical colour representation across all three input producers
 // (touch, gpio, neokey) -- 0xRRGGBB. See button-style.h.
