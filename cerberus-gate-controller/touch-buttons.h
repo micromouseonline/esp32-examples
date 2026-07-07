@@ -75,9 +75,20 @@ inline void poll_touch_buttons(LGFX &lcd) {
   }
 }
 
+// Only call from the main task (app_loop / a future render context) --
+// never from inside poll_touch_buttons()'s Core-1 polling task -- this
+// redraws, and that task must never draw (see Step 4 of
+// INPUT-SKELETON-PLAN.md).
+inline void set_touch_button_style(ButtonID id, ButtonColour colour) {
+  if (id < NUM_BUTTONS) {
+    touch_buttons[id].setStyle(colour);
+  }
+}
+
 #else
 
 inline void init_touch_buttons(LGFX &lcd) {}
 inline void poll_touch_buttons(LGFX &lcd) {}  // no touchscreen on this board
+inline void set_touch_button_style(ButtonID, ButtonColour) {}
 
 #endif

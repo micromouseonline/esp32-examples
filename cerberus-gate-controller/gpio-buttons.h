@@ -11,7 +11,12 @@
 #pragma once
 
 #include "config.h"
+#include "gui-button.h"  // ButtonID, ButtonColour
 #include "input-events.h"
+
+// M5 Core's physical buttons have no LEDs -- this producer type never has
+// style hardware, on any board, so there's no real branch to gate this on.
+inline void set_gpio_button_style(ButtonID, ButtonColour) {}
 
 #if HAS_GPIO_BUTTONS
 

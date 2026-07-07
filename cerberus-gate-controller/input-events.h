@@ -15,7 +15,7 @@
 enum class InputSource {
   TOUCH,
   GPIO_BUTTON,
-  // I2C_BUTTON,    // future: 4-button I2C device, 1:1 mapping to ButtonID
+  NEOKEY_BUTTON,  // 4-button Adafruit NeoKey 1x4 (seesaw, I2C)
   // WIFI_MESSAGE,  // future: events synthesized from common/messages.h traffic
 };
 
@@ -50,6 +50,8 @@ inline const char* input_source_name(InputSource source) {
       return "TOUCH";
     case InputSource::GPIO_BUTTON:
       return "GPIO_BUTTON";
+    case InputSource::NEOKEY_BUTTON:
+      return "NEOKEY_BUTTON";
     default:
       return "UNKNOWN";
   }

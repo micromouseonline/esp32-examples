@@ -40,6 +40,10 @@ struct ButtonConfig {
 // 1. Create an enum so we can track the total button count easily
 enum ButtonID { BTN_ARM, BTN_START, BTN_GOAL, BTN_RESET, NUM_BUTTONS };
 
+// Canonical colour representation across all three input producers
+// (touch, gpio, neokey) -- 0xRRGGBB. See button-style.h.
+using ButtonColour = uint32_t;
+
 // clang-format off
 // 3. Define the static properties array
 const int bw = 62;
@@ -100,6 +104,13 @@ class CustomButton : public LGFX_Button {
       drawButton(inverted);
       _lcdPtr->setFont(previousFont);
     }
+  }
+
+  // Only call from the main task, never from the Core-1 input polling task
+  // -- this redraws (see button-style.h).
+  void setStyle(ButtonColour colour) {
+    setFillColor(colour);  // LGFX_Button API; stores as rgb888 == 0xRRGGBB
+    draw(false);
   }
 
   // Safe wrapper execution to fire off the bound callback pointer

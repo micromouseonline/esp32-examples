@@ -18,6 +18,7 @@
 #include "font-demo.h"
 #include "gpio-buttons.h"
 #include "input-events.h"
+#include "neokey-buttons.h"
 #include "touch-buttons.h"
 #include "touch-calibration.h"
 
@@ -33,6 +34,7 @@ static void input_poll_task(void *) {
   for (;;) {
     poll_gpio_buttons();
     poll_touch_buttons(lcd);
+    poll_neokey_buttons();
     vTaskDelay(period);
   }
 }
@@ -76,6 +78,7 @@ void app_setup() {
   input_queue_init();
   gpio_buttons_init();
   init_touch_buttons(lcd);
+  init_neokey_buttons();
 #if defined(BOARD_S3_CYD_TOUCH_FREENOVE)
   // Touch-only demo utility (its internal loop only exits via getTouch()).
   // M5 Core has no touch hardware, so calling this unconditionally would
