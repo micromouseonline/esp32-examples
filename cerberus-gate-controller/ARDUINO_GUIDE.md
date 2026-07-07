@@ -101,3 +101,26 @@ Create a file named `config_flags.h` in your sketch and paste:
 
 ---
 
+## Target Environment: `cerberus-jc2432w328c`
+### 1. Arduino IDE Menu Settings
+* **Target Board:** Select the menu item corresponding to platformio board target: `esp32dev`
+* **Flash Size:** 4MB
+
+### 2. Required Compiler Macros
+Create a file named `config_flags.h` in your sketch and paste:
+```cpp
+#define HAS_LOVYANGFX 1
+#define HAS_DISPLAY 1
+#define ARDUINO_USB_MODE 1
+#define BOARD_JC2432W328C 1
+#define STATUS_LED 16
+#define LED_ACTIVE_LOW 1
+```
+
+### 3. Required Libraries (Install via Library Manager)
+* lovyan03/LovyanGFX @ ^1.1.16
+* olikraus/U8g2 @ ^2.36.2
+* Networking
+
+---
+

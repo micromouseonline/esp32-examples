@@ -18,6 +18,8 @@
 #include "../common/boards/cyd2usb-diymalls-ili9341.h"
 #elif defined(BOARD_CYD2USB_DIYMALLS_ST7789)
 #include "../common/boards/cyd2usb-diymalls-st7789.h"
+#elif defined(BOARD_JC2432W328C)
+#include "../common/boards/jc2432w328c.h"
 #else  // Default: Freenove FNK0104B Configuration
 #include "../common/boards/cyd-touch-freenove.h"
 #endif
