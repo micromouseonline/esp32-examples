@@ -55,10 +55,10 @@ const int bw = 62;
 const int bs = (320-NUM_BUTTONS*bw)/3;
 inline const ButtonConfig BUTTON_MENU[NUM_BUTTONS] = {
   //  X,                Y,   W,  H,   Outline,   Fill,            Text,      size, font,            "Label",   Callback
-  { bw/2 + 0 * (bw+bs), 220,  bw, 32, TFT_WHITE, Color::REEVO_BLUE, TFT_WHITE, 1,    &fonts::DejaVu12, "ARM",   onArmPressed},
-  { bw/2 + 1 * (bw+bs), 220,  bw, 32, TFT_WHITE, Color::REEVO_BLUE, TFT_WHITE, 1,    &fonts::DejaVu12, "START", onStartPressed  },
-  { bw/2 + 2 * (bw+bs), 220,  bw, 32, TFT_WHITE, Color::REEVO_BLUE, TFT_WHITE, 1,    &fonts::DejaVu12, "GOAL",  onGoalPressed },
-  { bw/2 + 3 * (bw+bs), 220,  bw, 32, TFT_WHITE, Color::REEVO_BLUE, TFT_WHITE, 1,    &fonts::DejaVu12, "RESET",  onResetPressed }
+  { bw/2 + 0 * (bw+bs), 220,  bw, 32, TFT_WHITE, Color::REEVO_BLUE, TFT_WHITE, 1,    &fonts::DejaVu12, "PREV",   onArmPressed},
+  { bw/2 + 1 * (bw+bs), 220,  bw, 32, TFT_WHITE, Color::REEVO_BLUE, TFT_WHITE, 1,    &fonts::DejaVu12, "NEXT", onStartPressed  },
+  { bw/2 + 2 * (bw+bs), 220,  bw, 32, TFT_WHITE, Color::REEVO_BLUE, TFT_WHITE, 1,    &fonts::DejaVu12, "ACTION",  onGoalPressed },
+  { bw/2 + 3 * (bw+bs), 220,  bw, 32, TFT_WHITE, Color::REEVO_BLUE, TFT_WHITE, 1,    &fonts::DejaVu12, "--",  onResetPressed }
 };
 
 // clang-format on
