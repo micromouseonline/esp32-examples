@@ -56,8 +56,8 @@ void app_setup() {
   Serial.println("Well, hello there");
   statusIndicator.begin();
   lcd.init();          // setting up the display takes 500ms
-  lcd.setRotation(3);  // Set to Landscape (USB on the left)
-  // calibrate(lcd);
+  lcd.setRotation(LCD_ROTATION);
+// calibrate(lcd);
 #if defined(BOARD_S3_CYD_TOUCH_FREENOVE)
   // M5 Core has no touch controller (_touch is nullptr); LovyanGFX's
   // setCalibrate() dereferences it unconditionally (unlike touchCalibrate(),
