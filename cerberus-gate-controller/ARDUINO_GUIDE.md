@@ -25,7 +25,6 @@ Create a file named `config_flags.h` in your sketch and paste:
 #define BOARD_HAS_PSRAM 1
 #define BOARD_S3_CYD_TOUCH_FREENOVE 1
 #define STATUS_LED 42
-#define LCD_ROTATION 1
 ```
 
 ### 3. Required Libraries (Install via Library Manager)
@@ -38,7 +37,7 @@ Create a file named `config_flags.h` in your sketch and paste:
 
 ## Target Environment: `cerberus-m5-core`
 ### 1. Arduino IDE Menu Settings
-* **Target Board:** Select the menu item corresponding to platformio board target: `esp32dev`
+* **Target Board:** Select the menu item corresponding to platformio board target: `m5stack-core-esp32-16M`
 * **Flash Size:** Default
 
 ### 2. Required Compiler Macros
@@ -49,7 +48,50 @@ Create a file named `config_flags.h` in your sketch and paste:
 #define ARDUINO_USB_MODE 1
 #define BOARD_M5_CORE 1
 #define STATUS_LED -1
-#define LCD_ROTATION 1
+```
+
+### 3. Required Libraries (Install via Library Manager)
+* lovyan03/LovyanGFX @ ^1.1.16
+* olikraus/U8g2 @ ^2.36.2
+* Networking
+
+---
+
+## Target Environment: `cerberus-cyd2usb-diymalls-ili9341`
+### 1. Arduino IDE Menu Settings
+* **Target Board:** Select the menu item corresponding to platformio board target: `esp32dev`
+* **Flash Size:** 4MB
+
+### 2. Required Compiler Macros
+Create a file named `config_flags.h` in your sketch and paste:
+```cpp
+#define HAS_LOVYANGFX 1
+#define HAS_DISPLAY 1
+#define ARDUINO_USB_MODE 1
+#define BOARD_CYD2USB_DIYMALLS_ILI9341 1
+#define STATUS_LED -1
+```
+
+### 3. Required Libraries (Install via Library Manager)
+* lovyan03/LovyanGFX @ ^1.1.16
+* olikraus/U8g2 @ ^2.36.2
+* Networking
+
+---
+
+## Target Environment: `cerberus-cyd2usb-diymalls-st7789`
+### 1. Arduino IDE Menu Settings
+* **Target Board:** Select the menu item corresponding to platformio board target: `esp32dev`
+* **Flash Size:** 4MB
+
+### 2. Required Compiler Macros
+Create a file named `config_flags.h` in your sketch and paste:
+```cpp
+#define HAS_LOVYANGFX 1
+#define HAS_DISPLAY 1
+#define ARDUINO_USB_MODE 1
+#define BOARD_CYD2USB_DIYMALLS_ST7789 1
+#define STATUS_LED -1
 ```
 
 ### 3. Required Libraries (Install via Library Manager)
