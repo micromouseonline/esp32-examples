@@ -80,15 +80,24 @@ void app_setup() {
   gpio_buttons_init();
   init_touch_buttons(lcd);
   init_neokey_buttons();
-  font_demo_enter(lcd);
+  supervisor_render(lcd);  // boot into Supervisor (app_state's default)
   xTaskCreatePinnedToCore(input_poll_task, "input_poll", 4096, nullptr, 1, nullptr, 1);
 }
 
 void app_loop() {
   yield();
   input_queue_drain();
-  if (font_demo_dirty) {
-    font_demo_render(lcd);
+  switch (app_state) {
+    case AppState::SUPERVISOR:
+      if (supervisor_dirty) {
+        supervisor_render(lcd);
+      }
+      break;
+    case AppState::FONT_DEMO:
+      if (font_demo_dirty) {
+        font_demo_render(lcd);
+      }
+      break;
   }
   delay(50);
 }

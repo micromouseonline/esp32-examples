@@ -132,8 +132,3 @@ inline void font_demo_render(LGFX& display) {
   display.clearClipRect();
   font_demo_dirty = false;
 }
-
-inline void font_demo_enter(LGFX& display) {
-  font_demo_index = 0;
-  font_demo_render(display);
-}
