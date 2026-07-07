@@ -13,7 +13,7 @@
 #include "config.h"
 #include "input-events.h"
 
-#if defined(BOARD_M5_CORE)
+#if HAS_GPIO_BUTTONS
 
 #include "../common/button.h"
 
@@ -58,7 +58,7 @@ inline void poll_gpio_buttons() {
   }
 }
 
-#elif defined(BOARD_S3_CYD_TOUCH_FREENOVE)
+#else
 
 inline void gpio_buttons_init() {}
 inline void poll_gpio_buttons() {}  // no physical buttons on this board

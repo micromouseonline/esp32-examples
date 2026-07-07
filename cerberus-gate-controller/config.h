@@ -29,6 +29,11 @@ constexpr int PIN_BUTTON_B = 38;
 constexpr int PIN_BUTTON_C = 37;
 constexpr unsigned long BUTTON_C_LONG_PRESS_MS = 600;  // hold threshold for the double-duty button
 
+// ----- Input Capability Flags -----
+#define HAS_TOUCH_INPUT 0
+#define HAS_GPIO_BUTTONS 1
+#define HAS_NEOKEY_BUTTONS 0
+
 #else  // Default: Freenove FNK0104B Configuration
 
 // ----- Panel Driver & Touch Controller Selection -----
@@ -72,6 +77,11 @@ constexpr int PIN_TOUCH_INT = 17;
 constexpr int PIN_TOUCH_RST = 18;
 constexpr int TOUCH_I2C_ADDR = 0x38;  // FT6336U default
 constexpr int TOUCH_I2C_HZ = 400000;
+
+// ----- Input Capability Flags -----
+#define HAS_TOUCH_INPUT 1
+#define HAS_GPIO_BUTTONS 0
+#define HAS_NEOKEY_BUTTONS 0
 
 #endif
 
