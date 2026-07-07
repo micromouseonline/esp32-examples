@@ -65,105 +65,75 @@ const FontEntry demoFonts[] = {
 
 };
 
-inline void show_fonts_structured(LGFX& display) {
-  const int TOTAL_FONTS = sizeof(demoFonts) / sizeof(demoFonts[0]);
-  int currentFontIndex = 0;
+constexpr int FONT_DEMO_TOTAL = sizeof(demoFonts) / sizeof(demoFonts[0]);
 
-  // Screen Layout Layout Definitions
-  const int buttonHeight = 40;
-  const int topZoneHeight = 30;
-  const int bottomZoneY = display.height() - buttonHeight;
+// Content stays above y=200 -- the shared touch button bar (BUTTON_MENU,
+// gui-button.h) is drawn once at y=220 and never redrawn here, so
+// font_demo_render() must not paint over it. PREV/NEXT/ACTION navigation is
+// the shared bar's job now (Step 6's on_button_event dispatcher), not this
+// file's -- this replaces the old show_fonts_structured()'s own blocking
+// touch loop and hand-drawn nav buttons entirely.
+constexpr int FONT_DEMO_CONTENT_HEIGHT = 200;
 
-  while (true) {
-    display.fillScreen(TFT_BLACK);
+inline int font_demo_index = 0;
+inline bool font_demo_dirty = true;
 
-    // Get the current active font entry
-    FontEntry current = demoFonts[currentFontIndex];
-
-    // ==========================================
-    // 1. RENDER HEADER (Top of screen)
-    // ==========================================
-    display.setTextDatum(textdatum_t::top_left);
-    display.setFont(&fonts::Font2);
-    display.setTextColor(TFT_CYAN, TFT_BLACK);
-    display.drawString(current.name, 10, 5);
-
-    // Horizontal divider line below the header
-    display.drawFastHLine(0, topZoneHeight, display.width(), TFT_DARKGRAY);
-
-    // ==========================================
-    // 2. RENDER FONT SAMPLES (Middle of screen)
-    // ==========================================
-    display.setFont(current.font);
-    display.setTextColor(TFT_WHITE, TFT_BLACK);
-
-    int sampleY = topZoneHeight + 15;
-
-    // Line 1: Numerals
-    display.drawCenterString("01:23.678", 160, sampleY);
-    sampleY += display.fontHeight() + 5;  // spacing padding
-    display.drawCenterString("888888888", 160, sampleY);
-
-    sampleY += display.fontHeight() + 0;  // spacing padding
-    display.drawString("The five boxing wizards jump quickly.", 10, sampleY);
-    sampleY += display.fontHeight() + 0;  // spacing padding
-    display.drawString("Pack my box with five dozen liquor jugs.", 10, sampleY);
-
-    // ==========================================
-    // 3. RENDER NAVIGATION BUTTONS (Bottom of screen)
-    // ==========================================
-    display.drawFastHLine(0, bottomZoneY, display.width(), TFT_DARKGRAY);
-
-    int btnWidth = display.width() / 2;
-    display.setFont(&fonts::FreeSansBold9pt7b);
-    display.setTextDatum(textdatum_t::middle_center);
-
-    // PREV Button (Left side)
-    if (currentFontIndex > 0) {
-      display.fillRect(0, bottomZoneY + 2, btnWidth - 2, buttonHeight - 2, TFT_NAVY);
-      display.setTextColor(TFT_WHITE, TFT_NAVY);
-      display.drawString("<< PREV", btnWidth / 2, bottomZoneY + (buttonHeight / 2));
-    }
-
-    // NEXT Button (Right side)
-    if (currentFontIndex < TOTAL_FONTS - 1) {
-      display.fillRect(btnWidth + 2, bottomZoneY + 2, btnWidth - 2, buttonHeight - 2, TFT_NAVY);
-      display.setTextColor(TFT_WHITE, TFT_NAVY);
-      display.drawString("NEXT >>", btnWidth + (btnWidth / 2), bottomZoneY + (buttonHeight / 2));
-    }
-
-    // ==========================================
-    // 4. TOUCH INPUT INTERACTION HANDLING
-    // ==========================================
-    bool selectionMade = false;
-
-    while (!selectionMade) {
-      uint16_t tx, ty;
-      if (display.getTouch(&tx, &ty)) {
-        // Check if touch coordinates fall inside the bottom button zone
-        if (ty > bottomZoneY) {
-          // Left Side Tapped (PREV)
-          if (tx < btnWidth) {
-            if (currentFontIndex > 0) {
-              currentFontIndex--;
-              selectionMade = true;
-            }
-          }
-          // Right Side Tapped (NEXT)
-          else {
-            if (currentFontIndex < TOTAL_FONTS - 1) {
-              currentFontIndex++;
-              selectionMade = true;
-            }
-          }
-        }
-
-        // Keep loop locked until the user lifts their finger off the glass
-        while (display.getTouch(&tx, &ty)) {
-          delay(10);
-        }
-      }
-      delay(10);
-    }
+inline void font_demo_next() {
+  if (font_demo_index < FONT_DEMO_TOTAL - 1) {
+    font_demo_index++;
+    font_demo_dirty = true;
   }
+}
+
+inline void font_demo_prev() {
+  if (font_demo_index > 0) {
+    font_demo_index--;
+    font_demo_dirty = true;
+  }
+}
+
+// Only call from the main task -- this draws, same rule as
+// set_touch_button_style() (button-style.h).
+inline void font_demo_render(LGFX& display) {
+  // A fillRect alone only bounds the background -- glyphs from large fonts
+  // (e.g. the 75px numeric fonts) still paint past FONT_DEMO_CONTENT_HEIGHT
+  // and over the button bar below. setClipRect() makes that physically
+  // impossible: nothing drawn below can write outside this rect, regardless
+  // of font size, so oversized samples get cropped instead of overwriting
+  // the bar.
+  display.setClipRect(0, 0, display.width(), FONT_DEMO_CONTENT_HEIGHT);
+  display.fillRect(0, 0, display.width(), FONT_DEMO_CONTENT_HEIGHT, TFT_BLACK);
+
+  FontEntry current = demoFonts[font_demo_index];
+
+  // Header
+  display.setTextDatum(textdatum_t::top_left);
+  display.setFont(&fonts::Font2);
+  display.setTextColor(TFT_CYAN, TFT_BLACK);
+  display.drawString(current.name, 10, 5);
+
+  const int topZoneHeight = 30;
+  display.drawFastHLine(0, topZoneHeight, display.width(), TFT_DARKGRAY);
+
+  // Font samples
+  display.setFont(current.font);
+  display.setTextColor(TFT_WHITE, TFT_BLACK);
+
+  int sampleY = topZoneHeight + 15;
+  display.drawCenterString("01:23.678", 160, sampleY);
+  sampleY += display.fontHeight() + 5;  // spacing padding
+  display.drawCenterString("888888888", 160, sampleY);
+
+  sampleY += display.fontHeight() + 0;  // spacing padding
+  display.drawString("The five boxing wizards jump quickly.", 10, sampleY);
+  sampleY += display.fontHeight() + 0;  // spacing padding
+  display.drawString("Pack my box with five dozen liquor jugs.", 10, sampleY);
+
+  display.clearClipRect();
+  font_demo_dirty = false;
+}
+
+inline void font_demo_enter(LGFX& display) {
+  font_demo_index = 0;
+  font_demo_render(display);
 }

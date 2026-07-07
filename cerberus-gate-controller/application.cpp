@@ -80,17 +80,15 @@ void app_setup() {
   gpio_buttons_init();
   init_touch_buttons(lcd);
   init_neokey_buttons();
-#if defined(BOARD_S3_CYD_TOUCH_FREENOVE)
-  // Touch-only demo utility (its internal loop only exits via getTouch()).
-  // M5 Core has no touch hardware, so calling this unconditionally would
-  // spin forever here and app_loop() (GPIO button polling) would never run.
-  // show_fonts_structured(lcd);
-#endif
+  font_demo_enter(lcd);
   xTaskCreatePinnedToCore(input_poll_task, "input_poll", 4096, nullptr, 1, nullptr, 1);
 }
 
 void app_loop() {
   yield();
   input_queue_drain();
+  if (font_demo_dirty) {
+    font_demo_render(lcd);
+  }
   delay(50);
 }
