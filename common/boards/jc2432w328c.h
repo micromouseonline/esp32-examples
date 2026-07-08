@@ -73,5 +73,6 @@ constexpr int TOUCH_I2C_HZ = 400000;
 #define HAS_GPIO_BUTTONS 0
 #define HAS_NEOKEY_BUTTONS 0
 #define TOUCH_SHARES_DISPLAY_SPI_BUS 0  // touch is I2C, not on the panel's SPI bus at all
+#define TOUCH_NEEDS_CALIBRATION 0  // capacitive CST820 reports pixel coordinates directly
 
 constexpr int LCD_ROTATION = 3;  // confirmed working for the panel; touch offset_rotation may still need tuning separately

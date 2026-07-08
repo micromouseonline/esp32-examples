@@ -2,35 +2,19 @@
 
 #include <Arduino.h>
 #include <Preferences.h>
-#include <nvs_flash.h>
 #include "display.h"
+
+// Only meaningful on boards with resistive touch (TOUCH_NEEDS_CALIBRATION,
+// set per-board in common/boards/*.h) -- capacitive touch chips (FT6336U,
+// CST820) already report screen-pixel coordinates and never call into this
+// file. Callers must still guard with #if HAS_TOUCH_INPUT &&
+// TOUCH_NEEDS_CALIBRATION (see application.cpp/app-modes.h) since
+// setTouchCalibrate() dereferences the touch driver unconditionally and will
+// crash on a board with no touch controller (e.g. M5 Core).
 
 inline Preferences prefs;
 inline uint16_t touchCalData[8];
 const char* PREFS_NAMESPACE = "touch-cal";
-
-inline void factory_reset() {
-  Serial.println("\n=========================================");
-  Serial.println("WARNING: Initiating complete NVS Flash Wipe...");
-  Serial.println("=========================================");
-
-  // Erase the default NVS partition
-  esp_err_t err = nvs_flash_erase();
-
-  if (err == ESP_OK) {
-    Serial.println("[SUCCESS] Entire NVS storage has been formatted!");
-    Serial.println("All old project namespaces and settings are GONE.");
-  } else {
-    Serial.printf("[ERROR] NVS Erase failed! Code: 0x%X\n", err);
-  }
-
-  // Reinitialize it so it's a completely blank, healthy slate
-  nvs_flash_init();
-
-  Serial.println("=========================================");
-  Serial.println("Done! You can now upload your touch screen project safely.");
-  Serial.println("=========================================");
-}
 
 /**
  * Triggers the library's built-in calibration wizard, saves the resulting

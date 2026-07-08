@@ -71,5 +71,6 @@ constexpr int TOUCH_SPI_HZ = 1000000;
 #define HAS_GPIO_BUTTONS 0
 #define HAS_NEOKEY_BUTTONS 0
 #define TOUCH_SHARES_DISPLAY_SPI_BUS 0  // XPT2046 has its own dedicated SPI pins, separate from the panel
+#define TOUCH_NEEDS_CALIBRATION 1  // resistive XPT2046 -- raw ADC readings need mapping to screen pixels
 
 constexpr int LCD_ROTATION = 3;

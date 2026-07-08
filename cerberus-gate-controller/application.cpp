@@ -26,6 +26,7 @@
 StatusLED statusIndicator;
 static LGFX lcd;
 static LGFX_Sprite sprite(&lcd);  // Create an instance of LGFX_Sprite if you plan to use sprites.
+static TaskHandle_t input_poll_task_handle = nullptr;
 
 // Local Input Polling Task (Core 1, per DESIGN-REQUIREMENT.md). Owns all
 // input-device reads (GPIO + touch); the main task (app_setup/app_loop) owns
@@ -48,13 +49,14 @@ void app_setup() {
   statusIndicator.begin();
   lcd.init();  // setting up the display takes 500ms
   lcd.setRotation(LCD_ROTATION);
-// calibrate(lcd);
-#if defined(BOARD_S3_CYD_TOUCH_FREENOVE)
-  // M5 Core has no touch controller (_touch is nullptr); LovyanGFX's
-  // setCalibrate() dereferences it unconditionally (unlike touchCalibrate(),
-  // which null-checks), so only call this where touch hardware exists.
-  uint16_t touchCalData[8] = {239, 319, 239, 1, 1, 319, 1, 1};
-  lcd.setTouchCalibrate(touchCalData);
+#if HAS_TOUCH_INPUT && TOUCH_NEEDS_CALIBRATION
+  // Only resistive touch (XPT2046, both CYD2USB boards) needs this --
+  // capacitive touch (FT6336U, CST820) already reports screen-pixel
+  // coordinates. Loads stored calibration from NVS, or launches the
+  // interactive wizard if none is stored yet. Safe to call here: the input
+  // polling task (below) hasn't started yet, so there's no concurrent
+  // lcd.getTouch() to race against.
+  calibrate(lcd);
 #endif
   lcd.fillScreen(TFT_BLACK);
   lcd.setFont(&fonts::DejaVu56);
@@ -81,7 +83,7 @@ void app_setup() {
   init_touch_buttons(lcd);
   init_neokey_buttons();
   supervisor_render(lcd);  // boot into Supervisor (app_state's default)
-  xTaskCreatePinnedToCore(input_poll_task, "input_poll", 4096, nullptr, 1, nullptr, 1);
+  xTaskCreatePinnedToCore(input_poll_task, "input_poll", 4096, nullptr, 1, &input_poll_task_handle, 1);
 }
 
 void app_loop() {
@@ -97,6 +99,21 @@ void app_loop() {
       if (font_demo_dirty) {
         font_demo_render(lcd);
       }
+      break;
+    case AppState::RECALIBRATE_TOUCH:
+      // On-demand recalibration (Supervisor menu), unlike the app_setup()
+      // call, runs after input_poll_task has started -- suspend it first so
+      // re_calibrate()'s lcd.calibrateTouch() doesn't race poll_touch_buttons()'s
+      // lcd.getTouch() calls on Core 1 for the same touch driver.
+      if (input_poll_task_handle) {
+        vTaskSuspend(input_poll_task_handle);
+      }
+      re_calibrate(lcd);
+      if (input_poll_task_handle) {
+        vTaskResume(input_poll_task_handle);
+      }
+      app_state = AppState::SUPERVISOR;
+      supervisor_dirty = true;
       break;
   }
   delay(50);

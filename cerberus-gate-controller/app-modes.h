@@ -17,7 +17,7 @@
 #include "font-demo.h"
 #include "gui-button.h"  // ButtonID
 
-enum class AppState { SUPERVISOR, FONT_DEMO };
+enum class AppState { SUPERVISOR, FONT_DEMO, RECALIBRATE_TOUCH };
 
 inline AppState app_state = AppState::SUPERVISOR;
 inline bool supervisor_dirty = true;
@@ -42,9 +42,21 @@ inline void enter_placeholder_c() {
   Serial.println("[APP] Placeholder C selected (no-op)");
 }
 
+// Actual recalibration (re_calibrate(), which needs the LGFX instance) runs
+// from app_loop() in application.cpp on the RECALIBRATE_TOUCH state -- this
+// header has no access to `lcd`, same reason enter_font_demo() only flips
+// state/dirty flags and leaves drawing to app_loop().
+inline void enter_recalibrate_touch() {
+  app_state = AppState::RECALIBRATE_TOUCH;
+}
+
 inline const ModeEntry MODE_TABLE[] = {
     {"Font Demo Viewer", enter_font_demo},
+#if HAS_TOUCH_INPUT && TOUCH_NEEDS_CALIBRATION
+    {"Recalibrate Touch", enter_recalibrate_touch},
+#else
     {"Placeholder B", enter_placeholder_b},
+#endif
     {"Placeholder C", enter_placeholder_c},
 };
 constexpr int NUM_MODES = sizeof(MODE_TABLE) / sizeof(MODE_TABLE[0]);

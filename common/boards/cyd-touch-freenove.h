@@ -54,5 +54,6 @@ constexpr int TOUCH_I2C_HZ = 400000;
 #define HAS_GPIO_BUTTONS 0
 #define HAS_NEOKEY_BUTTONS 0
 #define TOUCH_SHARES_DISPLAY_SPI_BUS 0  // FT6336U is on I2C, not the display's SPI bus
+#define TOUCH_NEEDS_CALIBRATION 0  // capacitive FT6336U reports pixel coordinates directly
 
 constexpr int LCD_ROTATION = 1;

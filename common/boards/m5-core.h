@@ -32,5 +32,6 @@ constexpr unsigned long BUTTON_C_LONG_PRESS_MS = 600;  // hold threshold for the
 #define HAS_GPIO_BUTTONS 1
 #define HAS_NEOKEY_BUTTONS 0
 #define TOUCH_SHARES_DISPLAY_SPI_BUS 0
+#define TOUCH_NEEDS_CALIBRATION 0  // no touch controller on this board
 
 constexpr int LCD_ROTATION = 1;
