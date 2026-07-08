@@ -11,12 +11,8 @@
 #pragma once
 
 #include "config.h"
-#include "gui-button.h"  // ButtonID, ButtonColour
+#include "gui-button.h"  // ButtonID
 #include "input-events.h"
-
-// M5 Core's physical buttons have no LEDs -- this producer type never has
-// style hardware, on any board, so there's no real branch to gate this on.
-inline void set_gpio_button_style(ButtonID, ButtonColour) {}
 
 #if HAS_GPIO_BUTTONS
 
@@ -36,11 +32,9 @@ inline void gpio_buttons_init() {
 
 inline void poll_gpio_buttons() {
   if (button_a.wasPressed()) {
-    Serial.println("[GPIO] Button A pressed -> ARM");
     input_queue_post(BTN_ARM, InputSource::GPIO_BUTTON);
   }
   if (button_b.wasPressed()) {
-    Serial.println("[GPIO] Button B pressed -> START");
     input_queue_post(BTN_START, InputSource::GPIO_BUTTON);
   }
 
@@ -54,10 +48,8 @@ inline void poll_gpio_buttons() {
     unsigned long held_ms = millis() - c_press_start_ms;
     c_was_down = false;
     if (held_ms >= BUTTON_C_LONG_PRESS_MS) {
-      Serial.printf("[GPIO] Button C long-press (%lums) -> RESET\n", held_ms);
       input_queue_post(BTN_RESET, InputSource::GPIO_BUTTON);
     } else {
-      Serial.printf("[GPIO] Button C short-press (%lums) -> GOAL\n", held_ms);
       input_queue_post(BTN_GOAL, InputSource::GPIO_BUTTON);
     }
   }

@@ -93,7 +93,7 @@ inline void font_demo_prev() {
 }
 
 // Only call from the main task -- this draws, same rule as
-// set_touch_button_style() (button-style.h).
+// set_touch_button_style() (touch-buttons.h).
 inline void font_demo_render(LGFX& display) {
   // A fillRect alone only bounds the background -- glyphs from large fonts
   // (e.g. the 75px numeric fonts) still paint past FONT_DEMO_CONTENT_HEIGHT

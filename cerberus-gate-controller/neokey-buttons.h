@@ -13,7 +13,6 @@
 #if HAS_NEOKEY_BUTTONS
 
 #include "neokey-driver.h"
-#include "neokey-pixels.h"
 
 // Non-blocking: hands neokey_init_task() to a background FreeRTOS task
 // instead of calling init_neokey_device() directly, so a board with no
@@ -39,15 +38,8 @@ inline void poll_neokey_buttons() {
   neokey_bus_unlock();
   for (int i = 0; i < NUM_BUTTONS; i++) {
     if (neokey_device.wasPressed(i)) {
-      Serial.printf("[NEOKEY] key %d pressed -> %s\n", i, BUTTON_MENU[i].label);
       input_queue_post(static_cast<ButtonID>(i), InputSource::NEOKEY_BUTTON);
     }
-  }
-}
-
-inline void set_neokey_button_style(ButtonID id, ButtonColour colour) {
-  if (id < NUM_BUTTONS) {
-    neokey_set_colour(static_cast<uint8_t>(id), colour);
   }
 }
 
@@ -55,6 +47,5 @@ inline void set_neokey_button_style(ButtonID id, ButtonColour colour) {
 
 inline void init_neokey_buttons() {}
 inline void poll_neokey_buttons() {}  // no NeoKey on this board
-inline void set_neokey_button_style(ButtonID, ButtonColour) {}
 
 #endif

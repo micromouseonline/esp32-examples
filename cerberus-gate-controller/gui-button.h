@@ -3,7 +3,6 @@
 #include <Arduino.h>
 #include <LovyanGFX.h>
 #include "config.h"
-#include "font-demo.h"
 // Define a type for our button action callback function
 typedef void (*ButtonCallback)();
 
@@ -45,8 +44,7 @@ struct ButtonConfig {
   ButtonCallback onPress;  // The function to execute when clicked
 };
 
-// Canonical colour representation across all three input producers
-// (touch, gpio, neokey) -- 0xRRGGBB. See button-style.h.
+// Colour representation for CustomButton::setStyle() -- 0xRRGGBB.
 using ButtonColour = uint32_t;
 
 // clang-format off
@@ -55,10 +53,10 @@ const int bw = 62;
 const int bs = (320-NUM_BUTTONS*bw)/3;
 inline const ButtonConfig BUTTON_MENU[NUM_BUTTONS] = {
   //  X,                Y,   W,  H,   Outline,   Fill,            Text,      size, font,            "Label",   Callback
-  { bw/2 + 0 * (bw+bs), 220,  bw, 32, TFT_WHITE, Color::REEVO_BLUE, TFT_WHITE, 1,    &fonts::DejaVu12, "PREV",   onArmPressed},
-  { bw/2 + 1 * (bw+bs), 220,  bw, 32, TFT_WHITE, Color::REEVO_BLUE, TFT_WHITE, 1,    &fonts::DejaVu12, "NEXT", onStartPressed  },
-  { bw/2 + 2 * (bw+bs), 220,  bw, 32, TFT_WHITE, Color::REEVO_BLUE, TFT_WHITE, 1,    &fonts::DejaVu12, "ACTION",  onGoalPressed },
-  { bw/2 + 3 * (bw+bs), 220,  bw, 32, TFT_WHITE, Color::REEVO_BLUE, TFT_WHITE, 1,    &fonts::DejaVu12, "--",  onResetPressed }
+  { bw/2 + 0 * (bw+bs), 220,  bw, 32, TFT_WHITE, Color::ACCENT, TFT_WHITE, 1,    &fonts::DejaVu12, "PREV",   onArmPressed},
+  { bw/2 + 1 * (bw+bs), 220,  bw, 32, TFT_WHITE, Color::ACCENT, TFT_WHITE, 1,    &fonts::DejaVu12, "NEXT", onStartPressed  },
+  { bw/2 + 2 * (bw+bs), 220,  bw, 32, TFT_WHITE, Color::ACCENT, TFT_WHITE, 1,    &fonts::DejaVu12, "ACTION",  onGoalPressed },
+  { bw/2 + 3 * (bw+bs), 220,  bw, 32, TFT_WHITE, Color::ACCENT, TFT_WHITE, 1,    &fonts::DejaVu12, "--",  onResetPressed }
 };
 
 // clang-format on
@@ -79,29 +77,6 @@ class CustomButton : public LGFX_Button {
     LGFX_Button::initButton(_lcdPtr, _cfg.x, _cfg.y, _cfg.width, _cfg.height, _cfg.outlineColor, _cfg.fillColor, _cfg.textColor, _cfg.label, _cfg.textSize);
   }
 
-  // bool contains(int tx, int ty) {
-  //   int top = _cfg.y - _cfg.height / 2;
-  //   if (ty < top) {
-  //     return false;
-  //   }
-
-  //   int bottom = _cfg.y + _cfg.height / 2;
-  //   if (ty > bottom) {
-  //     return false;
-  //   }
-
-  //   int left = _cfg.x - _cfg.width / 2;
-  //   if (tx < left) {
-  //     return false;
-  //   }
-
-  //   int right = _cfg.x + _cfg.width / 2;
-  //   if (tx > right) {
-  //     return false;
-  //   }
-  //   return true;
-  // }
-
   void draw(bool inverted = false) {
     if (_lcdPtr) {
       const lgfx::IFont* previousFont = _lcdPtr->getFont();
@@ -112,7 +87,7 @@ class CustomButton : public LGFX_Button {
   }
 
   // Only call from the main task, never from the Core-1 input polling task
-  // -- this redraws (see button-style.h).
+  // -- this redraws (see set_touch_button_style(), touch-buttons.h).
   void setStyle(ButtonColour colour) {
     setFillColor(colour);  // LGFX_Button API; stores as rgb888 == 0xRRGGBB
     draw(false);

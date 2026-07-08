@@ -1,22 +1,45 @@
-/*
- * cerberus-gate-controller
- *
- * Template for a multi-target ESP32 Arduino project.
- *
- * SUPPORTED BOARDS
- *   BOARD_S3_ZERO       - ESP32-S3 Zero (RGB LED on pin 21)
- *   BOARD_C3_SUPER_MINI - ESP32-C3 Super Mini (LED on pin 8)
- *   BOARD_C3_XIAO       - Seeed XIAO ESP32-C3 (LED on pin 10)
- *   BOARD_C6_SUPER_MINI - ESP32-C6 Super Mini (LED on pin 15)
- *
- * ARDUINO IDE (2.x only)
- *   Uncomment exactly one BOARD_xxx define in src/board_config.h before building.
- *   Arduino IDE 1.x is not supported; it cannot resolve #include "src/...".
- *
- * PLATFORMIO
- *   Board selection is handled automatically via build_flags in platformio.ini.
- *   Leave all BOARD_xxx defines in board_config.h commented out.
- *
- * BEFORE DEPLOYMENT
- *   Change the AP password in src/network-manager.cpp (search for "password123").
- */
+# cerberus-gate-controller
+
+ESP32 gate-timer controller with a touchscreen UI. Currently implements a
+Supervisor menu and input system (touch / GPIO / NeoKey 1x4) shared across
+five board targets; the race-timing logic itself (see `gate-controller.md`
+in the workspace root) is not yet implemented.
+
+## What it illustrates
+
+- **Producer-agnostic input dispatch** -- touch, physical GPIO buttons (M5
+  Core), and an optional NeoKey 1x4 I2C keypad all post the same `ButtonID`
+  events into one FreeRTOS queue from a Core-1 polling task. The main task
+  drains the queue and dispatches through a single `on_button_event()`, so
+  application logic never knows which physical device generated a press.
+  See `USER-INPUT-SYSTEM.md` for the full design.
+- **Runtime hardware presence detection** -- the NeoKey module is optional
+  on every board; a background task probes for it non-blockingly and the
+  rest of the app degrades to silent no-ops if it's absent or unplugged.
+- **Multi-target board config** -- `platformio.ini` extends shared base
+  environments from `../base-boards.ini`; board-specific pins and display
+  driver selection live in `../common/boards/`.
+- **Runtime touch calibration** -- resistive-touch boards (XPT2046) persist
+  a calibration to NVS and fall back to an interactive wizard if none is
+  stored (`touch-calibration.h`).
+
+## Targets
+
+| PlatformIO env                          | Board                              |
+|------------------------------------------|-------------------------------------|
+| cerberus-esp32-s3-cyd-touch-freenove     | Freenove FNK0104B ESP32-S3 CYD      |
+| cerberus-m5-core                         | M5Stack Core                        |
+| cerberus-cyd2usb-diymalls-ili9341        | CYD2USB (DIYMalls, ILI9341 panel)   |
+| cerberus-cyd2usb-diymalls-st7789         | CYD2USB (DIYMalls, ST7789 panel)    |
+| cerberus-jc2432w328c                     | JC2432W328C                         |
+
+## Build
+
+```
+pio run -e cerberus-esp32-s3-cyd-touch-freenove
+pio run -e cerberus-esp32-s3-cyd-touch-freenove -t upload
+```
+
+See the [workspace build guide](../BUILDING.md) for details on targeting
+different boards, and `USER-INPUT-SYSTEM.md` for how the input/dispatch
+layer works.

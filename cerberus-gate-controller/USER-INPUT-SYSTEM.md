@@ -46,19 +46,23 @@ is present:
   single ID space all three producers post into.
 - `BUTTON_MENU` (`gui-button.h`) is the canonical PREV/NEXT/ACTION/--
   labelling, shared by the touch bar and the dispatcher.
-- `set_button_style()` / `ButtonColour` (`button-style.h`) is a single call
-  that updates touch (redraw), GPIO (no-op -- no LEDs on M5 Core), and
-  NeoKey (pixel colour) at once. Built and working, not currently called
-  from application logic.
+- `set_touch_button_style(ButtonID, ButtonColour)` (`touch-buttons.h`)
+  redraws one on-screen button in place. GPIO buttons have no LEDs on any
+  board, so there's no GPIO equivalent. NeoKey's 4 pixels are general
+  indicators, not per-button feedback -- addressed directly by
+  `neokey_set_colour()`/`neokey_set_all()` (`neokey-pixels.h`), not through
+  `ButtonID`. (An earlier unified `set_button_style()` spanning all three
+  producers was removed -- GPIO's leg was a permanent no-op and NeoKey's
+  didn't fit the per-button framing.)
 
 ## App state (`app-modes.h`)
 
 `AppState`: `SUPERVISOR` (mode-select menu, the boot default) / `FONT_DEMO`
-/ `RECALIBRATE_TOUCH` / `NEOKEY_DEMO`. `on_button_event(ButtonID)` is the
+/ `RECALIBRATE_TOUCH` / `PLACEHOLDER`. `on_button_event(ButtonID)` is the
 single dispatch point every producer's press ultimately reaches, switched
-on the current state. "NeoKey Colour Demo" is a Supervisor menu entry that
-cycles the 4 NeoKey pixels through a palette -- a hardware smoke test as
-much as a feature.
+on the current state. Unimplemented Supervisor entries share the generic
+`PLACEHOLDER` state (`enter_placeholder()`) until they become real
+sub-applications.
 
 ## Touch calibration (`touch-calibration.h`)
 

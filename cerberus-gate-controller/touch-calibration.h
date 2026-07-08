@@ -78,28 +78,3 @@ inline void calibrate(LGFX& lcd) {
     re_calibrate(lcd);
   }
 }
-
-inline void show_touch_point(LGFX& lcd) {
-  lgfx::touch_point_t raw_point;
-  int32_t screenX, screenY;
-
-  // 1. Fetch RAW values coming off the FT6336 registers
-  // This bypasses offset_rotation, mapping arrays, and min/max calibration clips.
-  uint32_t raw_count = lcd.getTouchRaw(&raw_point, 1);  // 1 = maximum number of fingers to scan
-
-  // 2. Fetch the standard translated layout coordinates
-  bool screen_is_touched = lcd.getTouch(&screenX, &screenY);
-
-  if (raw_count > 0 && screen_is_touched) {
-    lcd.setTextColor(TFT_YELLOW, TFT_BLACK);
-    lcd.setCursor(10, 40);
-    lcd.setFont(&fonts::DejaVu9);
-    lcd.println("--- TOUCH DETECTED ---");
-    lcd.printf("RAW CHIP REGISTERS -> X: %3d,   Y: %3d\n", raw_point.x, raw_point.y);
-    int x = map(raw_point.y, 0, 320, 0, 320);
-    int y = map(raw_point.x, 240, 0, 0, 240);
-    lcd.printf("     MAPPED SCREEN -> X: %3d,   Y: %3d\n", x, y);
-    lcd.printf(" TRANSLATED SCREEN -> X: %3d,   Y: %3d\n", screenX, screenY);
-    delay(10);  // Small debounce window to keep the stream readable
-  }
-}

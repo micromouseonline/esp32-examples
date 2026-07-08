@@ -44,19 +44,6 @@ inline void input_queue_post(ButtonID id, InputSource source) {
   }
 }
 
-inline const char* input_source_name(InputSource source) {
-  switch (source) {
-    case InputSource::TOUCH:
-      return "TOUCH";
-    case InputSource::GPIO_BUTTON:
-      return "GPIO_BUTTON";
-    case InputSource::NEOKEY_BUTTON:
-      return "NEOKEY_BUTTON";
-    default:
-      return "UNKNOWN";
-  }
-}
-
 // Call once per app_loop() iteration. Drains all pending events (non-blocking)
 // and dispatches each to its BUTTON_MENU callback.
 inline void input_queue_drain() {
@@ -65,9 +52,6 @@ inline void input_queue_drain() {
   }
   InputEvent evt;
   while (xQueueReceive(xInputQueue, &evt, 0) == pdTRUE) {
-    const char* label = (evt.id < NUM_BUTTONS) ? BUTTON_MENU[evt.id].label : "?";
-    Serial.printf("[INPUT] dispatching %s (id=%d) via %s at t=%lums\n", label, evt.id,
-                  input_source_name(evt.source), (unsigned long)evt.timestamp);
     if (evt.id < NUM_BUTTONS && BUTTON_MENU[evt.id].onPress != nullptr) {
       BUTTON_MENU[evt.id].onPress();
     }

@@ -19,7 +19,6 @@
 #if HAS_TOUCH_INPUT
 
 inline CustomButton touch_buttons[NUM_BUTTONS];
-inline bool touch_was_active = false;
 
 // Guards lcd.getTouch() against the main task's draw calls on boards where
 // touch and the display panel share one physical SPI bus. A no-op on every
@@ -59,14 +58,6 @@ inline void poll_touch_buttons(LGFX &lcd) {
   touch_bus_lock();
   bool touched = lcd.getTouch(&touchX, &touchY);
   touch_bus_unlock();
-  // Log every raw touch-down, independent of whether it lands inside any
-  // button's hit-box -- lets uncalibrated/misaligned touch (e.g. resistive
-  // XPT2046 before calibration) show up on the serial log even when it
-  // never reaches input_queue_post().
-  if (touched && !touch_was_active) {
-    Serial.printf("[TOUCH] raw touch at x=%d, y=%d\n", touchX, touchY);
-  }
-  touch_was_active = touched;
   for (int i = 0; i < NUM_BUTTONS; i++) {
     touch_buttons[i].press(touched && touch_buttons[i].contains(touchX, touchY));
     if (touch_buttons[i].justPressed()) {

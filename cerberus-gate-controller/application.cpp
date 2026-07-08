@@ -1,21 +1,14 @@
 #include <Arduino.h>
 #include <Preferences.h>
-#include <WiFi.h>
-#include <esp_wifi.h>
 #include <freertos/task.h>
 
 #include "application.h"
 
 #include "../common/board-config.h"
-#include "../common/board-id.h"
-#include "../common/esp32_info.h"
-#include "../common/secrets.h"
-#include "../common/wifi-manager.h"
 
 #include "display.h"
 
 #include "app-modes.h"
-#include "display-basics.h"
 #include "font-demo.h"
 #include "gpio-buttons.h"
 #include "input-events.h"
@@ -25,7 +18,6 @@
 
 StatusLED statusIndicator;
 static LGFX lcd;
-static LGFX_Sprite sprite(&lcd);  // Create an instance of LGFX_Sprite if you plan to use sprites.
 static TaskHandle_t input_poll_task_handle = nullptr;
 
 // Local Input Polling Task (Core 1, per DESIGN-REQUIREMENT.md). Owns all
@@ -44,8 +36,6 @@ static void input_poll_task(void *) {
 void app_setup() {
   // get the serial connection kicked off.
   Serial.begin(115200);
-  // delay(1000);
-  // Serial.println("Well, hello there");
   statusIndicator.begin();
   lcd.init();  // setting up the display takes 500ms
   lcd.setRotation(LCD_ROTATION);
@@ -62,7 +52,7 @@ void app_setup() {
   lcd.setFont(&fonts::DejaVu56);
   lcd.setTextSize(1);
   lcd.setTextDatum(textdatum_t::middle_center);
-  lcd.setTextColor(Color::REEVO_BLUE);
+  lcd.setTextColor(Color::ACCENT);
   lcd.drawString("READY!", lcd.width() / 2, lcd.height() / 2);
   uint32_t start_time = millis();
   // it may take anything up to 2000ms altogether to get  a serial connection
@@ -105,11 +95,10 @@ void app_loop() {
         font_demo_render(lcd);
       }
       break;
-    case AppState::NEOKEY_DEMO:
-      if (neokey_demo_dirty) {
-        neokey_demo_render(lcd);
+    case AppState::PLACEHOLDER:
+      if (placeholder_dirty) {
+        placeholder_render(lcd);
       }
-      neokey_demo_update();
       break;
     case AppState::RECALIBRATE_TOUCH:
       // On-demand recalibration (Supervisor menu), unlike the app_setup()

@@ -20,7 +20,6 @@
 #include <freertos/task.h>
 
 #include "Adafruit_NeoKey_1x4.h"
-#include "gui-button.h"  // NUM_BUTTONS
 #include "seesaw_neopixel.h"
 
 // Guards the shared I2C bus (port 1) between poll_neokey_buttons()'s reads
