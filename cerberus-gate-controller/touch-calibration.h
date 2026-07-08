@@ -4,13 +4,19 @@
 #include <Preferences.h>
 #include "display.h"
 
-// Only meaningful on boards with resistive touch (TOUCH_NEEDS_CALIBRATION,
-// set per-board in common/boards/*.h) -- capacitive touch chips (FT6336U,
-// CST820) already report screen-pixel coordinates and never call into this
-// file. Callers must still guard with #if HAS_TOUCH_INPUT &&
-// TOUCH_NEEDS_CALIBRATION (see application.cpp/app-modes.h) since
-// setTouchCalibrate() dereferences the touch driver unconditionally and will
-// crash on a board with no touch controller (e.g. M5 Core).
+// Gated per-board by TOUCH_NEEDS_CALIBRATION (common/boards/*.h). Originally
+// resistive-only (XPT2046's raw ADC readings need linear mapping to screen
+// pixels) -- also required on capacitive boards now: a capacitive chip
+// reports pixel coordinates in its own native orientation, but if that
+// doesn't match the panel's LCD_ROTATION, touches land in the wrong place
+// (found on Freenove; see INPUT-SKELETON-PLAN.md). lcd.calibrateTouch()'s
+// 4-corner wizard is technology-agnostic -- it captures whatever mapping is
+// needed from raw-reported to actual-screen position, so it fixes rotation
+// offset the same way it fixes resistive scaling. Callers must still guard
+// with #if HAS_TOUCH_INPUT && TOUCH_NEEDS_CALIBRATION (see
+// application.cpp/app-modes.h) since setTouchCalibrate() dereferences the
+// touch driver unconditionally and will crash on a board with no touch
+// controller (e.g. M5 Core).
 
 inline Preferences prefs;
 inline uint16_t touchCalData[8];

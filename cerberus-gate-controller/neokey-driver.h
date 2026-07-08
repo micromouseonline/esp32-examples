@@ -16,10 +16,33 @@
 
 #include <Arduino.h>
 #include <Wire.h>
+#include <freertos/semphr.h>
+#include <freertos/task.h>
 
 #include "Adafruit_NeoKey_1x4.h"
 #include "gui-button.h"  // NUM_BUTTONS
 #include "seesaw_neopixel.h"
+
+// Guards the shared I2C bus (port 1) between poll_neokey_buttons()'s reads
+// (neokey_device.update(), Core-1 input polling task) and any pixel-colour
+// writes (neokey_device.setColour()/setAllColour(), called from the main
+// task -- e.g. the Supervisor's NeoKey colour demo). Unlike
+// touch_spi_bus_mutex (touch-buttons.h), this is unconditionally needed
+// whenever HAS_NEOKEY_BUTTONS=1: reads and writes to the same TwoWire(1)
+// instance from two different FreeRTOS tasks on two different cores are a
+// real race, not a hypothetical one, the moment anything calls
+// neokey_set_colour()/neokey_set_all() while input_poll_task is running.
+inline SemaphoreHandle_t neokey_bus_mutex = nullptr;
+inline void neokey_bus_lock() {
+  if (neokey_bus_mutex != nullptr) {
+    xSemaphoreTake(neokey_bus_mutex, portMAX_DELAY);
+  }
+}
+inline void neokey_bus_unlock() {
+  if (neokey_bus_mutex != nullptr) {
+    xSemaphoreGive(neokey_bus_mutex);
+  }
+}
 
 // NeoPixel colour helpers (0xRRGGBB), used by neokey-pixels.h.
 constexpr uint32_t NP_RED = 0xFF0000;
@@ -46,10 +69,37 @@ class Neokey {
 
   void setup() {
     myWire.begin(PIN_NEOKEY_SDA, PIN_NEOKEY_SCL);
-    if (!neokey.begin(NEOKEY_I2C_ADDR)) {
-      // Deliberately not a while(1) hang: this runs from the shared Core-1
-      // input polling task (see application.cpp), so a missing NeoKey must
-      // not brick every other input producer sharing that task.
+    // Doesn't bound a single stalled transaction below ~1s (Wire's software
+    // timeout default is already 50ms, Wire.cpp, but ESP-IDF's
+    // i2c_master_cmd_begin() has a hardcoded 1000ms-minimum retry
+    // granularity no software timeout can go below) -- kept anyway as the
+    // correct/intended call for anything that *does* ack quickly.
+    myWire.setTimeOut(50);
+
+    // Quick presence probe -- one raw transaction (~1s worst case, per the
+    // 1s floor above) instead of handing straight to Adafruit_seesaw::begin(),
+    // which retries up to 30 times across its internal stages when nothing
+    // acks (~10-30s worst case, confirmed on Freenove/ESP32-S3 hardware).
+    // This runs inside init_neokey_device()'s lock (see below), which
+    // poll_neokey_buttons() and the pixel setters now skip entirely via
+    // isAvailable() rather than blocking on -- but other code could still
+    // stall waiting for this lock during the probe, so bounding it to ~1s
+    // instead of ~10-30s matters even with that fix in place.
+    myWire.beginTransmission(NEOKEY_I2C_ADDR);
+    if (myWire.endTransmission() != 0) {
+      available = false;
+      Serial.println("[NEOKEY] not found (quick probe), check wiring");
+      return;
+    }
+
+    available = neokey.begin(NEOKEY_I2C_ADDR);
+    if (!available) {
+      // Reaching here means the quick probe above got an ACK but the full
+      // seesaw handshake still failed -- a real device is present at this
+      // address but isn't behaving like a NeoKey (unlikely, but possible
+      // with address collisions). Deliberately not a while(1) hang: this
+      // runs from a background task (init_neokey_buttons(),
+      // neokey-buttons.h), but must still not wedge that task forever.
       Serial.println("[NEOKEY] not found, check wiring");
       return;
     }
@@ -57,7 +107,14 @@ class Neokey {
     raw_buttons = neokey.read();
   }
 
+  bool isAvailable() const {
+    return available;
+  }
+
   uint8_t update() {
+    if (!available) {
+      return raw_buttons;
+    }
     raw_buttons = neokey.read();
     uint32_t now = millis();
     last_debounced = debounced_buttons;  // snapshot before any state changes
@@ -165,8 +222,8 @@ class Neokey {
   }
 
   bool setColour(uint8_t button, uint32_t colour) {
-    if (button >= NEOKEY_1X4_KEYS) {
-      return false;  // Invalid button index
+    if (!available || button >= NEOKEY_1X4_KEYS) {
+      return false;  // not present, or invalid button index
     }
     neokey.pixels.setPixelColor(button, colour);
     neokey.pixels.show();
@@ -174,6 +231,9 @@ class Neokey {
   }
 
   bool setAllColour(uint32_t colour) {
+    if (!available) {
+      return false;
+    }
     for (int i = 0; i < NEOKEY_1X4_KEYS; i++) {
       neokey.pixels.setPixelColor(i, colour);
     }
@@ -184,6 +244,7 @@ class Neokey {
  private:
   TwoWire myWire;
   Adafruit_NeoKey_1x4 neokey;
+  bool available = false;  // true once neokey.begin() has succeeded in setup()
 
   static const uint8_t NUM_KEYS = NEOKEY_1X4_KEYS;
 
@@ -201,7 +262,30 @@ class Neokey {
 inline Neokey neokey_device;
 
 inline void init_neokey_device() {
+  neokey_bus_mutex = xSemaphoreCreateMutex();
+  // Locked (unlike the old synchronous-boot version of this code) --
+  // init_neokey_buttons() (neokey-buttons.h) now runs this from a one-shot
+  // background task (neokey_init_task below) instead of blocking
+  // app_setup(), specifically so an absent module's worst-case ~10s
+  // detection stall (ESP32-S3, see Neokey::setup()'s comment) never delays
+  // the Supervisor screen or GPIO/touch polling. That means this can now
+  // genuinely run concurrently with poll_neokey_buttons() on Core 1 (the
+  // old "safe because the task hasn't started yet" reasoning no longer
+  // holds), so it needs the same bus lock every other I2C-touching call
+  // already takes.
+  neokey_bus_lock();
   neokey_device.setup();
+  neokey_bus_unlock();
+}
+
+// One-shot background task: runs init_neokey_device() (which can stall for
+// several seconds with no module attached) off the main task, so
+// app_setup() never blocks on NeoKey detection. Self-deletes when done --
+// poll_neokey_buttons() picks up the result via Neokey::isAvailable(),
+// whichever task sets it.
+inline void neokey_init_task(void*) {
+  init_neokey_device();
+  vTaskDelete(nullptr);
 }
 
 #endif  // HAS_NEOKEY_BUTTONS

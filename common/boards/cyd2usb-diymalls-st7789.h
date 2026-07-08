@@ -66,10 +66,21 @@ constexpr int PIN_TOUCH_CS = 33;
 constexpr int PIN_TOUCH_IRQ = 36;  // input-only pin
 constexpr int TOUCH_SPI_HZ = 1000000;
 
+// ----- NeoKey 1x4 Configuration (optional attachment, I2C port 1) -----
+// Confirmed against the physical board's external I2C connector:
+// GPIO22=SCL, GPIO27=SDA. Same connector as the ILI9341 variant (both are
+// otherwise-identical DIYMALLS units). Neither pin is used by the
+// panel/touch pins above -- this board's I2C bus is otherwise completely
+// unused (touch is SPI XPT2046).
+// CONFIRMED on real hardware: key presses work, including simultaneously
+// with touch.
+constexpr int PIN_NEOKEY_SDA = 27;
+constexpr int PIN_NEOKEY_SCL = 22;
+
 // ----- Input Capability Flags -----
 #define HAS_TOUCH_INPUT 1
 #define HAS_GPIO_BUTTONS 0
-#define HAS_NEOKEY_BUTTONS 0
+#define HAS_NEOKEY_BUTTONS 1  // optional attachment -- runtime-detected, see neokey-driver.h's `available` flag
 #define TOUCH_SHARES_DISPLAY_SPI_BUS 0  // XPT2046 has its own dedicated SPI pins, separate from the panel
 #define TOUCH_NEEDS_CALIBRATION 1  // resistive XPT2046 -- raw ADC readings need mapping to screen pixels
 

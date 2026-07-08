@@ -15,12 +15,28 @@
 #include "neokey-driver.h"
 #include "neokey-pixels.h"
 
+// Non-blocking: hands neokey_init_task() to a background FreeRTOS task
+// instead of calling init_neokey_device() directly, so a board with no
+// physical NeoKey attached never delays app_setup() (see neokey-driver.h).
 inline void init_neokey_buttons() {
-  init_neokey_device();
+  xTaskCreate(neokey_init_task, "neokey_init", 4096, nullptr, 1, nullptr);
 }
 
 inline void poll_neokey_buttons() {
+  // Checked before taking the lock, not after -- while the background init
+  // task is still detecting (isAvailable() still false), it holds
+  // neokey_bus_mutex for the full probe/handshake duration. Locking here
+  // unconditionally would block this call, and since this runs from the
+  // shared Core-1 input_poll_task loop (application.cpp), that stalled
+  // every other producer sharing that loop -- confirmed on real hardware
+  // as "screen unresponsive" for several seconds after boot with no NeoKey
+  // attached, even though the Supervisor screen itself painted immediately.
+  if (!neokey_device.isAvailable()) {
+    return;
+  }
+  neokey_bus_lock();
   neokey_device.update();
+  neokey_bus_unlock();
   for (int i = 0; i < NUM_BUTTONS; i++) {
     if (neokey_device.wasPressed(i)) {
       Serial.printf("[NEOKEY] key %d pressed -> %s\n", i, BUTTON_MENU[i].label);

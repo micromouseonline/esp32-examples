@@ -16,6 +16,7 @@
 ### 2. Required Compiler Macros
 Create a file named `config_flags.h` in your sketch and paste:
 ```cpp
+#define HAS_NEOKEY_LIB 1
 #define HAS_LOVYANGFX 1
 #define HAS_DISPLAY 1
 #define HAS_NEOPIXEL 1
@@ -28,6 +29,8 @@ Create a file named `config_flags.h` in your sketch and paste:
 ```
 
 ### 3. Required Libraries (Install via Library Manager)
+* adafruit/Adafruit BusIO @ ^1.17.2
+* adafruit/Adafruit seesaw Library @ ^1.7.9
 * lovyan03/LovyanGFX @ ^1.1.16
 * olikraus/U8g2 @ ^2.36.2
 * adafruit/Adafruit NeoPixel @ ^1.15.5
@@ -43,6 +46,7 @@ Create a file named `config_flags.h` in your sketch and paste:
 ### 2. Required Compiler Macros
 Create a file named `config_flags.h` in your sketch and paste:
 ```cpp
+#define HAS_NEOKEY_LIB 1
 #define HAS_LOVYANGFX 1
 #define HAS_DISPLAY 1
 #define ARDUINO_USB_MODE 1
@@ -51,6 +55,8 @@ Create a file named `config_flags.h` in your sketch and paste:
 ```
 
 ### 3. Required Libraries (Install via Library Manager)
+* adafruit/Adafruit BusIO @ ^1.17.2
+* adafruit/Adafruit seesaw Library @ ^1.7.9
 * lovyan03/LovyanGFX @ ^1.1.16
 * olikraus/U8g2 @ ^2.36.2
 * Networking
@@ -65,6 +71,7 @@ Create a file named `config_flags.h` in your sketch and paste:
 ### 2. Required Compiler Macros
 Create a file named `config_flags.h` in your sketch and paste:
 ```cpp
+#define HAS_NEOKEY_LIB 1
 #define HAS_LOVYANGFX 1
 #define HAS_DISPLAY 1
 #define ARDUINO_USB_MODE 1
@@ -73,6 +80,8 @@ Create a file named `config_flags.h` in your sketch and paste:
 ```
 
 ### 3. Required Libraries (Install via Library Manager)
+* adafruit/Adafruit BusIO @ ^1.17.2
+* adafruit/Adafruit seesaw Library @ ^1.7.9
 * lovyan03/LovyanGFX @ ^1.1.16
 * olikraus/U8g2 @ ^2.36.2
 * Networking
@@ -87,6 +96,7 @@ Create a file named `config_flags.h` in your sketch and paste:
 ### 2. Required Compiler Macros
 Create a file named `config_flags.h` in your sketch and paste:
 ```cpp
+#define HAS_NEOKEY_LIB 1
 #define HAS_LOVYANGFX 1
 #define HAS_DISPLAY 1
 #define ARDUINO_USB_MODE 1
@@ -95,6 +105,8 @@ Create a file named `config_flags.h` in your sketch and paste:
 ```
 
 ### 3. Required Libraries (Install via Library Manager)
+* adafruit/Adafruit BusIO @ ^1.17.2
+* adafruit/Adafruit seesaw Library @ ^1.7.9
 * lovyan03/LovyanGFX @ ^1.1.16
 * olikraus/U8g2 @ ^2.36.2
 * Networking
@@ -109,6 +121,7 @@ Create a file named `config_flags.h` in your sketch and paste:
 ### 2. Required Compiler Macros
 Create a file named `config_flags.h` in your sketch and paste:
 ```cpp
+#define HAS_NEOKEY_LIB 1
 #define HAS_LOVYANGFX 1
 #define HAS_DISPLAY 1
 #define ARDUINO_USB_MODE 1
@@ -118,6 +131,8 @@ Create a file named `config_flags.h` in your sketch and paste:
 ```
 
 ### 3. Required Libraries (Install via Library Manager)
+* adafruit/Adafruit BusIO @ ^1.17.2
+* adafruit/Adafruit seesaw Library @ ^1.7.9
 * lovyan03/LovyanGFX @ ^1.1.16
 * olikraus/U8g2 @ ^2.36.2
 * Networking

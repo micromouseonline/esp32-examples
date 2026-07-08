@@ -49,11 +49,22 @@ constexpr int PIN_TOUCH_RST = 18;
 constexpr int TOUCH_I2C_ADDR = 0x38;  // FT6336U default
 constexpr int TOUCH_I2C_HZ = 400000;
 
+// ----- NeoKey 1x4 Configuration (optional attachment, I2C port 1) -----
+// Confirmed against the physical FNK0104B board's dedicated external I2C
+// connector: GPIO5=SCL, GPIO6=SDA.
+constexpr int PIN_NEOKEY_SDA = 6;
+constexpr int PIN_NEOKEY_SCL = 5;
+
 // ----- Input Capability Flags -----
 #define HAS_TOUCH_INPUT 1
 #define HAS_GPIO_BUTTONS 0
-#define HAS_NEOKEY_BUTTONS 0
+#define HAS_NEOKEY_BUTTONS 1  // optional attachment -- runtime-detected, see neokey-driver.h's `available` flag
 #define TOUCH_SHARES_DISPLAY_SPI_BUS 0  // FT6336U is on I2C, not the display's SPI bus
-#define TOUCH_NEEDS_CALIBRATION 0  // capacitive FT6336U reports pixel coordinates directly
+// FT6336U reports pixel coordinates, but in its own native orientation --
+// with LCD_ROTATION=1 they don't line up with the displayed rotation
+// (confirmed on hardware: touches registered, but at the wrong position).
+// Run the same 4-corner wizard resistive boards use rather than hand-tuning
+// display.h's touch offset_rotation by trial and error.
+#define TOUCH_NEEDS_CALIBRATION 1
 
 constexpr int LCD_ROTATION = 1;

@@ -44,8 +44,8 @@ static void input_poll_task(void *) {
 void app_setup() {
   // get the serial connection kicked off.
   Serial.begin(115200);
-  delay(1000);
-  Serial.println("Well, hello there");
+  // delay(1000);
+  // Serial.println("Well, hello there");
   statusIndicator.begin();
   lcd.init();  // setting up the display takes 500ms
   lcd.setRotation(LCD_ROTATION);
@@ -81,6 +81,11 @@ void app_setup() {
   input_queue_init();
   gpio_buttons_init();
   init_touch_buttons(lcd);
+  // Non-blocking (see neokey-buttons.h/neokey-driver.h) -- kicks off a
+  // background task and returns immediately regardless of whether a
+  // physical NeoKey is attached, so it doesn't delay the Supervisor screen
+  // or GPIO/touch polling below even in the worst case (~10s detection
+  // stall on ESP32-S3 with no module attached).
   init_neokey_buttons();
   supervisor_render(lcd);  // boot into Supervisor (app_state's default)
   xTaskCreatePinnedToCore(input_poll_task, "input_poll", 4096, nullptr, 1, &input_poll_task_handle, 1);
@@ -99,6 +104,12 @@ void app_loop() {
       if (font_demo_dirty) {
         font_demo_render(lcd);
       }
+      break;
+    case AppState::NEOKEY_DEMO:
+      if (neokey_demo_dirty) {
+        neokey_demo_render(lcd);
+      }
+      neokey_demo_update();
       break;
     case AppState::RECALIBRATE_TOUCH:
       // On-demand recalibration (Supervisor menu), unlike the app_setup()

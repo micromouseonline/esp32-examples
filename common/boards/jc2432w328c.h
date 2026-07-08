@@ -64,15 +64,34 @@ constexpr int PANEL_OFFSET_ROTATION = 0;
 constexpr int PIN_TOUCH_SDA = 33;
 constexpr int PIN_TOUCH_SCL = 32;
 constexpr int PIN_TOUCH_RST = 25;
-constexpr int PIN_TOUCH_INT = 21;
+// PIN_TOUCH_INT was GPIO21, matching the reference driver's int=21. Freed to
+// -1 (no INT pin, matches display.h's existing -1-means-unwired convention,
+// e.g. PIN_LCD_RST above) to hand GPIO21 to the NeoKey I2C connector below --
+// LovyanGFX's Touch_CST816S doesn't require a wired INT pin, touch is
+// already read by polling (poll_touch_buttons() calls lcd.getTouch() every
+// cycle, not interrupt-driven).
+constexpr int PIN_TOUCH_INT = -1;
 constexpr int TOUCH_I2C_ADDR = 0x15;
 constexpr int TOUCH_I2C_HZ = 400000;
+
+// ----- NeoKey 1x4 Configuration (optional attachment, I2C port 1) -----
+// Board's external I2C connector: GPIO21/GPIO22, freed up above from the
+// touch controller's unused INT pin. CONFIRMED on real hardware: key
+// presses work, including simultaneously with touch.
+constexpr int PIN_NEOKEY_SDA = 21;
+constexpr int PIN_NEOKEY_SCL = 22;
 
 // ----- Input Capability Flags -----
 #define HAS_TOUCH_INPUT 1
 #define HAS_GPIO_BUTTONS 0
-#define HAS_NEOKEY_BUTTONS 0
+#define HAS_NEOKEY_BUTTONS 1  // optional attachment -- runtime-detected, see neokey-driver.h's `available` flag
 #define TOUCH_SHARES_DISPLAY_SPI_BUS 0  // touch is I2C, not on the panel's SPI bus at all
-#define TOUCH_NEEDS_CALIBRATION 0  // capacitive CST820 reports pixel coordinates directly
+// CST820 reports pixel coordinates, but in its own native orientation --
+// touch was reported working correctly on this board's hardware already
+// (offset_rotation=0 below happens to match LCD_ROTATION=3), but Freenove
+// hit exactly this class of bug (FT6336U, offset_rotation=0 did NOT match
+// its LCD_ROTATION=1), so calibration is enabled here too rather than
+// relying on a coincidental match holding across every physical unit.
+#define TOUCH_NEEDS_CALIBRATION 1
 
 constexpr int LCD_ROTATION = 3;  // confirmed working for the panel; touch offset_rotation may still need tuning separately
