@@ -57,8 +57,8 @@ is present:
 
 ## App state (`app-modes.h`)
 
-`AppState`: `SUPERVISOR` (mode-select menu, the boot default) / `FONT_DEMO`
-/ `RECALIBRATE_TOUCH` / `PLACEHOLDER`. `on_button_event(ButtonID)` is the
+`AppState`: `SUPERVISOR` (mode-select menu, the boot default) /
+`RECALIBRATE_TOUCH` / `PLACEHOLDER`. `on_button_event(ButtonID)` is the
 single dispatch point every producer's press ultimately reaches, switched
 on the current state. Unimplemented Supervisor entries share the generic
 `PLACEHOLDER` state (`enter_placeholder()`) until they become real

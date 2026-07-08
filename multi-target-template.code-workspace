@@ -21,6 +21,10 @@
 			"path": "cerberus-gate-controller"
 		},
 		{
+			"name": "cyd-font-demo",
+			"path": "cyd-font-demo"
+		},
+		{
 			"name": "hesperus-gate-sensor",
 			"path": "hesperus-gate-sensor"
 		},

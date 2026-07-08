@@ -14,16 +14,12 @@
 #include <Arduino.h>
 
 #include "display.h"  // LGFX
-#include "font-demo.h"
 #include "gui-button.h"  // ButtonID
 
-enum class AppState { SUPERVISOR, FONT_DEMO, RECALIBRATE_TOUCH, PLACEHOLDER };
+enum class AppState { SUPERVISOR, RECALIBRATE_TOUCH, PLACEHOLDER };
 
-// Content stays above y=200, same reason as FONT_DEMO_CONTENT_HEIGHT
-// (font-demo.h) -- the shared touch button bar (BUTTON_MENU, gui-button.h)
-// is drawn once at y=220 and never redrawn here. Kept as its own constant
-// (not shared with font-demo.h) since supervisor_render()/placeholder_render()
-// belong to this file, not the font demo.
+// Content stays above y=200 -- the shared touch button bar (BUTTON_MENU,
+// gui-button.h) is drawn once at y=220 and never redrawn here.
 constexpr int SUPERVISOR_CONTENT_HEIGHT = 200;
 
 inline AppState app_state = AppState::SUPERVISOR;
@@ -34,12 +30,6 @@ struct ModeEntry {
   const char* name;
   void (*enter)();
 };
-
-inline void enter_font_demo() {
-  app_state = AppState::FONT_DEMO;
-  font_demo_index = 0;
-  font_demo_dirty = true;
-}
 
 // Generic stand-in for a supervisor menu entry that isn't a real
 // sub-application yet -- clears the screen, shows `label` so you can tell
@@ -93,14 +83,13 @@ inline void placeholder_render(LGFX& display) {
 
 // Actual recalibration (re_calibrate(), which needs the LGFX instance) runs
 // from app_loop() in application.cpp on the RECALIBRATE_TOUCH state -- this
-// header has no access to `lcd`, same reason enter_font_demo() only flips
+// header has no access to `lcd`, same reason enter_placeholder() only flips
 // state/dirty flags and leaves drawing to app_loop().
 inline void enter_recalibrate_touch() {
   app_state = AppState::RECALIBRATE_TOUCH;
 }
 
 inline const ModeEntry MODE_TABLE[] = {
-    {"Font Demo Viewer", enter_font_demo},
 #if HAS_TOUCH_INPUT && TOUCH_NEEDS_CALIBRATION
     {"Recalibrate Touch", enter_recalibrate_touch},
 #else
@@ -113,7 +102,7 @@ inline const ModeEntry MODE_TABLE[] = {
 constexpr int NUM_MODES = sizeof(MODE_TABLE) / sizeof(MODE_TABLE[0]);
 
 // Only call from the main task -- this draws, same rule as
-// font_demo_render()/set_touch_button_style().
+// set_touch_button_style() (touch-buttons.h).
 inline void supervisor_render(LGFX& display) {
   display.setClipRect(0, 0, display.width(), SUPERVISOR_CONTENT_HEIGHT);
   display.fillRect(0, 0, display.width(), SUPERVISOR_CONTENT_HEIGHT, TFT_BLACK);
@@ -152,25 +141,6 @@ inline void on_button_event(ButtonID id) {
           break;
         case BTN_GOAL:
           MODE_TABLE[supervisor_selected].enter();
-          break;
-        case BTN_RESET:
-          break;
-        default:
-          break;
-      }
-      break;
-
-    case AppState::FONT_DEMO:
-      switch (id) {
-        case BTN_ARM:
-          font_demo_prev();
-          break;
-        case BTN_START:
-          font_demo_next();
-          break;
-        case BTN_GOAL:
-          app_state = AppState::SUPERVISOR;
-          supervisor_dirty = true;
           break;
         case BTN_RESET:
           break;
