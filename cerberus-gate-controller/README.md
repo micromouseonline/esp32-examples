@@ -2,8 +2,8 @@
 
 ESP32 gate-timer controller with a touchscreen UI. Currently implements a
 Supervisor menu and input system (touch / GPIO / NeoKey 1x4) shared across
-five board targets; the race-timing logic itself (see `gate-controller.md`
-in the workspace root) is not yet implemented.
+five board targets; the race-timing logic itself (see `DESIGN-REQUIREMENT.md`)
+is not yet implemented.
 
 ## What it illustrates
 
