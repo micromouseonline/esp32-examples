@@ -2,9 +2,9 @@
 //  touch-buttons.h — Touchscreen input producer (on-screen button bar).
 //  Detects taps against BUTTON_MENU zones and posts InputEvents. Polled from
 //  the Local Input Polling Task (Core 1, see application.cpp) -- this task
-//  must never draw, so press-flash feedback is dropped here (documented loss
-//  per Step 4 of INPUT-SKELETON-PLAN.md; may return later via a
-//  PRESSED/RELEASED event type consumed by the main/render task instead).
+//  must never draw, so press-flash feedback is dropped here (documented
+//  loss, see USER-INPUT-SYSTEM.md; may return later via a PRESSED/RELEASED
+//  event type consumed by the main/render task instead).
 // ----------------------------------------------------------------------------
 #pragma once
 
@@ -77,8 +77,7 @@ inline void poll_touch_buttons(LGFX &lcd) {
 
 // Only call from the main task (app_loop / a future render context) --
 // never from inside poll_touch_buttons()'s Core-1 polling task -- this
-// redraws, and that task must never draw (see Step 4 of
-// INPUT-SKELETON-PLAN.md).
+// redraws, and that task must never draw (see USER-INPUT-SYSTEM.md).
 inline void set_touch_button_style(ButtonID id, ButtonColour colour) {
   if (id < NUM_BUTTONS) {
     touch_buttons[id].setStyle(colour);

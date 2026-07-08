@@ -7,7 +7,7 @@
 //  poll_neokey_buttons() already have.
 //
 //  Not called from application.cpp yet -- nothing in the app has state to
-//  reflect in colour yet (Step 6+'s job, see INPUT-SKELETON-PLAN.md).
+//  reflect in colour yet (see USER-INPUT-SYSTEM.md).
 // ----------------------------------------------------------------------------
 #pragma once
 
@@ -18,8 +18,7 @@
 
 // Only call from the main task (app_loop / a future render context) -- never
 // from the Core-1 input polling task -- set_touch_button_style() may
-// redraw, and that task must never draw (see Step 4 of
-// INPUT-SKELETON-PLAN.md).
+// redraw, and that task must never draw (see USER-INPUT-SYSTEM.md).
 inline void set_button_style(ButtonID id, ButtonColour colour) {
   set_gpio_button_style(id, colour);
   set_touch_button_style(id, colour);
