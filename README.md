@@ -22,12 +22,6 @@ Each projects can be built for a variety of supported boards. Full instructions 
     BLE peripheral (Nordic UART Service) that streams a fake sensor reading to a
     connected phone/app, alongside two independently-blinking status LEDs.
 
-- **cerberus-gate-controller**
-    Touchscreen multi-gate race timer (Freenove CYD, M5Stack Core, or other CYD
-    variants) for the Mk2 timing system. Combines local buttons, a serial link to
-    the host, and a WiFi AP for remote intelligent gates into one TSF-synchronized
-    timing record. See its `DESIGN-REQUIREMENT.md` for details.
-
 - **event-capture-freertos**
     Precision event-timing pipeline: ISR-timestamped inputs, debounced and
     time-corrected through a chain of FreeRTOS tasks, with optional WiFi time

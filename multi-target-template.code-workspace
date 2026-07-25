@@ -17,20 +17,12 @@
 			"path": "event-capture-freertos"
 		},
 		{
-			"name": "cerberus-gate-controller",
-			"path": "cerberus-gate-controller"
-		},
-		{
 			"name": "cyd-font-demo",
 			"path": "cyd-font-demo"
 		},
 		{
 			"name": "hesperus-gate-sensor",
 			"path": "hesperus-gate-sensor"
-		},
-		{
-			"name": "wifi-scanner",
-			"path": "wifi-scanner"
 		},
 		{
 			"name": "ble-serial",
@@ -43,7 +35,11 @@
 		{
 			"name": "wifi-congestion-meter",
 			"path": "wifi-congestion-meter"
-		}
+		},
+		{
+			"name": "wifi-scanner",
+			"path": "wifi-scanner"
+		},
 	],
 	"settings": {
 		"editor.wordWrap": "on"
