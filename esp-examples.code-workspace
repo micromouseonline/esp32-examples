@@ -9,6 +9,10 @@
 			"path": "blinky-freertos"
 		},
 		{
+			"name": "template",
+			"path": "template"
+		},
+		{
 			"name": "oled-display",
 			"path": "oled-display"
 		},
@@ -39,7 +43,7 @@
 		{
 			"name": "wifi-scanner",
 			"path": "wifi-scanner"
-		},
+		}
 	],
 	"settings": {
 		"editor.wordWrap": "on"
