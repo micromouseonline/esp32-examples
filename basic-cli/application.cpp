@@ -15,8 +15,10 @@
 #include "../common/board-config.h"
 #include "../common/board-id.h"
 #include "application.h"
+#include "cli.h"
 
 StatusLED statusIndicator;
+Cli cli;
 
 enum class LedMode : uint8_t {
   SYSTEM_STARTING,    //
@@ -34,6 +36,54 @@ QueueHandle_t ledModeQueue = nullptr;
 
 void setMode(LedMode mode) {
   xQueueSend(ledModeQueue, &mode, 0);
+}
+
+// Forward declaration of command table for use in cmd_help
+// (defined after handlers below)
+extern const CliCommand commands[];
+extern const size_t commands_count;
+
+// CLI command handlers
+void cmd_help(int argc, char **argv) {
+  (void)argc;
+  (void)argv;
+  Serial.println("Commands:");
+  for (size_t i = 0; i < commands_count; i++) {
+    Serial.print("  ");
+    Serial.println(commands[i].name);
+  }
+}
+
+void cmd_echo(int argc, char **argv) {
+  for (int i = 1; i < argc; i++) {
+    Serial.print(argv[i]);
+    if (i < argc - 1) Serial.print(" ");
+  }
+  Serial.println();
+}
+
+void cmd_uptime(int argc, char **argv) {
+  (void)argc;
+  (void)argv;
+  Serial.print("Uptime: ");
+  Serial.print(millis());
+  Serial.println(" ms");
+}
+
+const CliCommand commands[] = {
+  {"help", cmd_help},
+  {"echo", cmd_echo},
+  {"uptime", cmd_uptime},
+};
+
+const size_t commands_count = sizeof(commands) / sizeof(commands[0]);
+
+static void cli_task(void *pvParameters) {
+  (void)pvParameters;
+  for (;;) {
+    cli.poll();
+    vTaskDelay(pdMS_TO_TICKS(10));
+  }
 }
 
 static void led_task(void *pvParameters) {
@@ -145,6 +195,9 @@ void setup() {
     Serial.printf("Serial port took %lu ms to establish.\n", serial_ready_time);
     Serial.printf("System running after %lu ms.\n", system_ready_time);
     setMode(LedMode::SYSTEM_READY);
+    // Initialize CLI and spawn CLI task
+    cli.begin(commands, commands_count);
+    xTaskCreatePinnedToCore(cli_task, "cli", 2048, NULL, 1, NULL, 1);
   }
 }
 
