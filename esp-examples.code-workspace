@@ -13,6 +13,10 @@
 			"path": "template"
 		},
 		{
+			"name": "basic-cli",
+			"path": "basic-cli"
+		},
+		{
 			"name": "oled-display",
 			"path": "oled-display"
 		},
