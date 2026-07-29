@@ -1,5 +1,9 @@
 # ESP32 Examples
 
+## Git commits
+
+Never commit changes without an explicit instruction to do so. Always wait for user approval before running git commit.
+
 ## Creating new projects from template
 
 When creating a new project from the `template` directory:
