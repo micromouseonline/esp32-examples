@@ -8,14 +8,23 @@ struct CliCommand {
   void (*handler)(int argc, char **argv);
 };
 
+struct CliAlias {
+  const char *name;
+  void (*handler)(int argc, char **argv);
+};
+
 class Cli {
  public:
   static constexpr size_t MAX_LINE = 64;
   static constexpr size_t MAX_ARGS = 8;
 
-  void begin(const CliCommand *commands, size_t count, Stream &serial = Serial) {
+  void begin(const CliCommand *commands, size_t count,
+             const CliAlias *aliases = nullptr, size_t aliasCount = 0,
+             Stream &serial = Serial) {
     _commands = commands;
     _commandCount = count;
+    _aliases = aliases;
+    _aliasCount = aliasCount;
     _serial = &serial;
     _len = 0;
   }
@@ -71,6 +80,13 @@ class Cli {
       }
     }
 
+    for (size_t i = 0; i < _aliasCount; i++) {
+      if (strcmp(argv[0], _aliases[i].name) == 0) {
+        _aliases[i].handler(argc, argv);
+        return;
+      }
+    }
+
     _serial->print("unknown command: ");
     _serial->println(argv[0]);
   }
@@ -101,6 +117,8 @@ class Cli {
 
   const CliCommand *_commands = nullptr;
   size_t _commandCount = 0;
+  const CliAlias *_aliases = nullptr;
+  size_t _aliasCount = 0;
   Stream *_serial = &Serial;
   char _buf[MAX_LINE];
   size_t _len = 0;

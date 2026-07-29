@@ -57,7 +57,8 @@ void cmd_help(int argc, char **argv) {
 void cmd_echo(int argc, char **argv) {
   for (int i = 1; i < argc; i++) {
     Serial.print(argv[i]);
-    if (i < argc - 1) Serial.print(" ");
+    if (i < argc - 1)
+      Serial.print(" ");
   }
   Serial.println();
 }
@@ -71,12 +72,20 @@ void cmd_uptime(int argc, char **argv) {
 }
 
 const CliCommand commands[] = {
-  {"help", cmd_help},
-  {"echo", cmd_echo},
-  {"uptime", cmd_uptime},
+    {"help", cmd_help},
+    {"echo", cmd_echo},
+    {"uptime", cmd_uptime},
 };
 
 const size_t commands_count = sizeof(commands) / sizeof(commands[0]);
+
+const CliAlias aliases[] = {
+    {"?", cmd_help},
+    {"h", cmd_help},
+    {"e", cmd_echo},
+};
+
+const size_t aliases_count = sizeof(aliases) / sizeof(aliases[0]);
 
 static void cli_task(void *pvParameters) {
   (void)pvParameters;
@@ -196,7 +205,7 @@ void setup() {
     Serial.printf("System running after %lu ms.\n", system_ready_time);
     setMode(LedMode::SYSTEM_READY);
     // Initialize CLI and spawn CLI task
-    cli.begin(commands, commands_count);
+    cli.begin(commands, commands_count, aliases, aliases_count);
     xTaskCreatePinnedToCore(cli_task, "cli", 2048, NULL, 1, NULL, 1);
   }
 }

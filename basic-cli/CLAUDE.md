@@ -12,10 +12,12 @@ Minimal FreeRTOS + CLI demo. Blink LED status + serial line-buffered command dis
 
 ## CLI conventions
 
-- `cli.h` is header-only; instantiate as `Cli cli;`, call `cli.begin(commands, count)` in setup, call `cli.poll()` repeatedly (here: in dedicated `cli_task` every 10ms).
+- `cli.h` is header-only; instantiate as `Cli cli;`, call `cli.begin(commands, count, aliases, alias_count)` in setup, call `cli.poll()` repeatedly (here: in dedicated `cli_task` every 10ms).
 - Commands are defined as a `const CliCommand[]` array: `{name_string, handler_function}` pairs.
-- Handler signature: `void handler(int argc, char **argv)` -- handler owns all argument validation/parsing. `argv[0]` is the command name.
+- Aliases (optional) are a separate `const CliAlias[]` array: `{alias_name, handler_function}` pairs pointing to command handlers. Dispatch searches commands first, then aliases.
+- Handler signature: `void handler(int argc, char **argv)` -- handler owns all argument validation/parsing. `argv[0]` is the command name (or alias).
 - Line buffer: 64 bytes max, 8-arg cap. Overflow silently truncates. Backspace/DEL supported, characters echoed. Blank lines ignored. Unknown commands print error.
+- Help command lists only primary commands, not aliases, keeping output concise.
 
 ## Key conventions
 
