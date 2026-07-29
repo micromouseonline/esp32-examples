@@ -2,9 +2,13 @@ import csv
 import os
 import re
 import subprocess
+import sys
 import time
 import serial
 import serial.tools.list_ports
+
+# Use PlatformIO's bundled esptool
+ESPTOOL_PATH = os.path.expanduser("~/.platformio/packages/tool-esptoolpy/esptool.py")
 
 CSV_FILE = "esp32_inventory.csv"
 CSV_HEADERS = ["MAC Address", "Name", "Chip Type", "Flash Size", "RAM", "PSRAM"]
@@ -75,7 +79,7 @@ def get_esp32_details(port):
         try:
             result = subprocess.run(
                 [
-                    "esptool", "--port", port, "--baud", "115200",
+                    sys.executable, ESPTOOL_PATH, "--port", port, "--baud", "115200",
                     "--before", before_mode, "--after", "no_reset",
                     "chip_id",
                 ],
@@ -85,7 +89,7 @@ def get_esp32_details(port):
 
             flash_result = subprocess.run(
                 [
-                    "esptool", "--port", port, "--baud", "115200",
+                    sys.executable, ESPTOOL_PATH, "--port", port, "--baud", "115200",
                     "--before", "no_reset",
                     "flash_id",
                 ],
