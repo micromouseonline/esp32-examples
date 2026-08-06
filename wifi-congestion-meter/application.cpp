@@ -122,8 +122,9 @@ void app_loop() {
       utilization_pct = 100.0f;
 
     // Display status
+    Serial.printf("\033[1G");
     Serial.printf("PORT %-5d ", port);
     print_bar_chart(utilization_pct);
-    Serial.printf("| %5.1f%% Utilized | %5d Pkts/sec | %6.1f KB/sec\n", utilization_pct, pkts, (float)bytes / 1024.0f);
+    Serial.printf("| %5.1f%% Utilized | %5d Pkts/sec | %6.1f KB/sec", utilization_pct, pkts, (float)bytes / 1024.0f);
   }
 }
