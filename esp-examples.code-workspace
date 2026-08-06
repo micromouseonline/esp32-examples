@@ -41,12 +41,23 @@
 			"path": "wifi-udp-blaster"
 		},
 		{
+			"name": "wifi-beacon-spammer",
+			"path": "wifi-beacon-spammer"
+		},
+		{
 			"name": "wifi-congestion-meter",
 			"path": "wifi-congestion-meter"
 		},
 		{
 			"name": "wifi-scanner",
 			"path": "wifi-scanner"
+		},
+		{
+			"name": "wifi-soft-ap",
+			"path": "wifi-soft-ap"
+		},
+		{
+			"path": "chip-id"
 		}
 	],
 	"settings": {
